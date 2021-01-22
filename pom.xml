@@ -14,6 +14,30 @@
     <java.version>11</java.version>
   </properties>
 
+  <modules>
+    <module>core</module>
+    <module>call-management</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-stack-depchain</artifactId>
+        <version>4.0.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-junit5</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
     <pluginManagement>
       <plugins>
