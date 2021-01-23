@@ -86,37 +86,37 @@ public class CreateCallTest {
 
   private CreateCall createCommand(CallType type) {
     LocalDateTime now = LocalDateTime.now();
-    return CreateCall.builder()
-      .uuid(UUID.randomUUID())
-      .callerNumber(new Phone("12345"))
-      .calleeNumber(new Phone("54321"))
-      .startedAt(now.minusMinutes(10))
-      .endedAt(now.minusMinutes(2))
-      .type(type)
-      .build();
+    var command = new CreateCall();
+    command.uuid(UUID.randomUUID());
+    command.callerNumber(Phone.of("12345"));
+    command.calleeNumber(Phone.of("54321"));
+    command.startedAt(now.minusMinutes(10));
+    command.endedAt(now.minusMinutes(2));
+    command.type(type);
+    return command;
   }
 
   private Call createExpectedObject(CreateCall command, Cost cost) {
-    return Call.builder()
-      .uuid(command.uuid())
-      .callerNumber(command.callerNumber())
-      .calleeNumber(command.calleeNumber())
-      .startedAt(command.startedAt())
-      .endedAt(command.endedAt())
-      .type(command.type())
-      .build();
+    var call = new Call();
+    call.uuid(command.uuid());
+    call.callerNumber(command.callerNumber());
+    call.calleeNumber(command.calleeNumber());
+    call.startedAt(command.startedAt());
+    call.endedAt(command.endedAt());
+    call.type(command.type());
+    return call;
   }
 
   private CallCreated createExpectedEvent(CreateCall command, Cost cost) {
-    return CallCreated.builder()
-      .uuid(command.uuid())
-      .callerNumber(command.callerNumber())
-      .calleeNumber(command.calleeNumber())
-      .startedAt(command.startedAt())
-      .endedAt(command.endedAt())
-      .type(command.type())
-      .cost(cost)
-      .build();
+    var event = new CallCreated();
+    event.uuid(command.uuid());
+    event.callerNumber(command.callerNumber());
+    event.calleeNumber(command.calleeNumber());
+    event.startedAt(command.startedAt());
+    event.endedAt(command.endedAt());
+    event.type(command.type());
+    event.cost(cost);
+    return event;
   }
 
   private void stubCostQueryHandler(Cost expectedCost) {

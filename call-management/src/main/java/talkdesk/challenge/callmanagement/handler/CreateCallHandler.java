@@ -16,37 +16,41 @@ public class CreateCallHandler extends CommandHandler<CreateCall> {
   }
 
   public Future<Void> handle(CommandContext context, CreateCall command) {
-    return Future.succeededFuture(CalculateCost.builder().build())
+    return Future.succeededFuture(createCalculateCostQuery())
       .compose(costQuery -> context.communicationBus()
         .ask("call-management.calculate-cost", costQuery, Cost.class))
       .compose(cost -> CompositeFuture.all(
-        Future.succeededFuture(createObject(command))
+        Future.succeededFuture(createCall(command))
           .compose(obj -> context.<Call>repositoryOf("call").save(obj)),
         Future.succeededFuture(createEvent(command, cost))
           .compose(event -> context.eventBus().publish(event))
       )).map(x -> null);
   }
 
-  private Call createObject(CreateCall command) {
-    return Call.builder()
-      .uuid(command.uuid())
-      .callerNumber(command.callerNumber())
-      .calleeNumber(command.calleeNumber())
-      .startedAt(command.startedAt())
-      .endedAt(command.endedAt())
-      .type(command.type())
-      .build();
+  private Call createCall(CreateCall command) {
+    var call = new Call();
+    call.uuid(command.uuid());
+    call.callerNumber(command.callerNumber());
+    call.calleeNumber(command.calleeNumber());
+    call.startedAt(command.startedAt());
+    call.endedAt(command.endedAt());
+    call.type(command.type());
+    return call;
+  }
+
+  private CalculateCost createCalculateCostQuery() {
+    return new CalculateCost();
   }
 
   private CallCreated createEvent(CreateCall command, Cost cost) {
-    return CallCreated.builder()
-      .uuid(command.uuid())
-      .callerNumber(command.callerNumber())
-      .calleeNumber(command.calleeNumber())
-      .startedAt(command.startedAt())
-      .endedAt(command.endedAt())
-      .type(command.type())
-      .cost(cost)
-      .build();
+    var event = new CallCreated();
+    event.uuid(command.uuid());
+    event.callerNumber(command.callerNumber());
+    event.calleeNumber(command.calleeNumber());
+    event.startedAt(command.startedAt());
+    event.endedAt(command.endedAt());
+    event.type(command.type());
+    event.cost(cost);
+    return event;
   }
 }

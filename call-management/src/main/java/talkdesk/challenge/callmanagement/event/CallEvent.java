@@ -6,10 +6,17 @@ import java.util.Objects;
 import java.util.UUID;
 
 public abstract class CallEvent implements DomainEvent {
-  protected UUID uuid;
+  private UUID uuid;
+
+  public CallEvent() {
+  }
 
   public UUID uuid() {
     return uuid;
+  }
+
+  public void uuid(UUID uuid) {
+    this.uuid = uuid;
   }
 
   @Override

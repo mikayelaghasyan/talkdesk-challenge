@@ -6,7 +6,6 @@ import talkdesk.challenge.callmanagement.model.Phone;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 public class CallCreated extends CallEvent {
   private Phone callerNumber;
@@ -16,31 +15,55 @@ public class CallCreated extends CallEvent {
   private CallType type;
   private Cost cost;
 
-  private CallCreated() {
+  public CallCreated() {
   }
 
   public Phone callerNumber() {
     return callerNumber;
   }
 
+  public void callerNumber(Phone callerNumber) {
+    this.callerNumber = callerNumber;
+  }
+
   public Phone calleeNumber() {
     return calleeNumber;
+  }
+
+  public void calleeNumber(Phone calleeNumber) {
+    this.calleeNumber = calleeNumber;
   }
 
   public LocalDateTime startedAt() {
     return startedAt;
   }
 
+  public void startedAt(LocalDateTime startedAt) {
+    this.startedAt = startedAt;
+  }
+
   public LocalDateTime endedAt() {
     return endedAt;
+  }
+
+  public void endedAt(LocalDateTime endedAt) {
+    this.endedAt = endedAt;
   }
 
   public CallType type() {
     return type;
   }
 
+  public void type(CallType type) {
+    this.type = type;
+  }
+
   public Cost cost() {
     return cost;
+  }
+
+  public void cost(Cost cost) {
+    this.cost = cost;
   }
 
   @Override
@@ -55,69 +78,5 @@ public class CallCreated extends CallEvent {
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), callerNumber, calleeNumber, startedAt, endedAt, type, cost);
-  }
-
-  public static Builder builder() {
-    return new Builder();
-  }
-
-  public static class Builder {
-    private UUID uuid;
-    private Phone callerNumber;
-    private Phone calleeNumber;
-    private LocalDateTime startedAt;
-    private LocalDateTime endedAt;
-    private CallType type;
-    private Cost cost;
-
-    private Builder() {
-    }
-
-    public CallCreated build() {
-      var event = new CallCreated();
-      event.uuid = uuid;
-      event.callerNumber = callerNumber;
-      event.calleeNumber = calleeNumber;
-      event.startedAt = startedAt;
-      event.endedAt = endedAt;
-      event.type = type;
-      event.cost = cost;
-      return event;
-    }
-
-    public Builder uuid(UUID uuid) {
-      this.uuid = uuid;
-      return this;
-    }
-
-    public Builder callerNumber(Phone phone) {
-      this.callerNumber = phone;
-      return this;
-    }
-
-    public Builder calleeNumber(Phone phone) {
-      this.calleeNumber = phone;
-      return this;
-    }
-
-    public Builder startedAt(LocalDateTime dt) {
-      this.startedAt = dt;
-      return this;
-    }
-
-    public Builder endedAt(LocalDateTime dt) {
-      this.endedAt = dt;
-      return this;
-    }
-
-    public Builder type(CallType type) {
-      this.type = type;
-      return this;
-    }
-
-    public Builder cost(Cost cost) {
-      this.cost = cost;
-      return this;
-    }
   }
 }

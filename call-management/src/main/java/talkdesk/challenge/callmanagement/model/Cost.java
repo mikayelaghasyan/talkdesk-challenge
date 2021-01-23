@@ -1,7 +1,18 @@
 package talkdesk.challenge.callmanagement.model;
 
 public class Cost {
-  private final long longValue;
+  private long longValue;
+
+  public Cost() {
+  }
+
+  public long longValue() {
+    return longValue;
+  }
+
+  public void longValue(long longValue) {
+    this.longValue = longValue;
+  }
 
   private Cost(long cost) {
     this.longValue = cost;
