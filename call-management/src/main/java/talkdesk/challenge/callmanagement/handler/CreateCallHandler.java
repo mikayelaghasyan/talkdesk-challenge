@@ -7,11 +7,12 @@ import talkdesk.challenge.callmanagement.event.CallCreated;
 import talkdesk.challenge.callmanagement.model.Call;
 import talkdesk.challenge.callmanagement.model.Cost;
 import talkdesk.challenge.callmanagement.query.CalculateCost;
-import talkdesk.challenge.core.CommandContext;
+import talkdesk.challenge.core.communication.CommandContext;
+import talkdesk.challenge.core.communication.CommandHandler;
 
-public class CreateCallHandler {
+public class CreateCallHandler extends CommandHandler<CreateCall> {
   public CreateCallHandler() {
-
+    super(CreateCall.class);
   }
 
   public Future<Void> handle(CommandContext context, CreateCall command) {

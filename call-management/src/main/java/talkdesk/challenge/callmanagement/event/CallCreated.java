@@ -3,14 +3,12 @@ package talkdesk.challenge.callmanagement.event;
 import talkdesk.challenge.callmanagement.model.CallType;
 import talkdesk.challenge.callmanagement.model.Cost;
 import talkdesk.challenge.callmanagement.model.Phone;
-import talkdesk.challenge.core.DomainEvent;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-public class CallCreated implements DomainEvent {
-  private UUID uuid;
+public class CallCreated extends CallEvent {
   private Phone callerNumber;
   private Phone calleeNumber;
   private LocalDateTime startedAt;
@@ -19,10 +17,6 @@ public class CallCreated implements DomainEvent {
   private Cost cost;
 
   private CallCreated() {
-  }
-
-  public UUID uuid() {
-    return uuid;
   }
 
   public Phone callerNumber() {
@@ -53,13 +47,14 @@ public class CallCreated implements DomainEvent {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
     CallCreated that = (CallCreated) o;
-    return uuid.equals(that.uuid) && callerNumber.equals(that.callerNumber) && calleeNumber.equals(that.calleeNumber) && startedAt.equals(that.startedAt) && endedAt.equals(that.endedAt) && type == that.type && cost.equals(that.cost);
+    return callerNumber.equals(that.callerNumber) && calleeNumber.equals(that.calleeNumber) && startedAt.equals(that.startedAt) && endedAt.equals(that.endedAt) && type == that.type && cost.equals(that.cost);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, callerNumber, calleeNumber, startedAt, endedAt, type, cost);
+    return Objects.hash(super.hashCode(), callerNumber, calleeNumber, startedAt, endedAt, type, cost);
   }
 
   public static Builder builder() {

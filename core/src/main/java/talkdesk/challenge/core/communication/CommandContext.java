@@ -1,4 +1,7 @@
-package talkdesk.challenge.core;
+package talkdesk.challenge.core.communication;
+
+import talkdesk.challenge.core.db.ReadWriteRepository;
+import talkdesk.challenge.core.domainevent.DomainEventBus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +9,7 @@ import java.util.Map;
 public class CommandContext {
   private final CommunicationBus communicationBus;
   private final DomainEventBus eventBus;
-  private Map<String, ReadOnlyRepository<?>> repositories;
+  private Map<String, ReadWriteRepository<?>> repositories;
 
   public CommandContext(CommunicationBus communicationBus, DomainEventBus eventBus) {
     this.communicationBus = communicationBus;

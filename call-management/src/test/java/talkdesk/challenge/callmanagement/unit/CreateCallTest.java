@@ -1,4 +1,4 @@
-package talkdesk.challenge.callmanagement;
+package talkdesk.challenge.callmanagement.unit;
 
 import io.vertx.core.Future;
 import io.vertx.junit5.VertxExtension;
@@ -16,10 +16,10 @@ import talkdesk.challenge.callmanagement.model.CallType;
 import talkdesk.challenge.callmanagement.model.Cost;
 import talkdesk.challenge.callmanagement.model.Phone;
 import talkdesk.challenge.callmanagement.query.CalculateCost;
-import talkdesk.challenge.core.CommandContext;
-import talkdesk.challenge.core.CommunicationBus;
-import talkdesk.challenge.core.DomainEventBus;
-import talkdesk.challenge.core.ReadWriteRepository;
+import talkdesk.challenge.core.communication.CommandContext;
+import talkdesk.challenge.core.communication.CommunicationBus;
+import talkdesk.challenge.core.domainevent.DomainEventBus;
+import talkdesk.challenge.core.db.ReadWriteRepository;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

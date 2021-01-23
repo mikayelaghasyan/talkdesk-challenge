@@ -1,4 +1,4 @@
-package talkdesk.challenge.core;
+package talkdesk.challenge.core.db;
 
 import io.vertx.core.Future;
 
