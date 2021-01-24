@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.vertx.config.ConfigRetriever;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.jackson.DatabindCodec;
@@ -17,7 +18,8 @@ import java.util.stream.Stream;
 
 public class Application implements ApplicationContext {
   private final Vertx vertx;
-  private final JsonObject config;
+
+  private JsonObject config;
 
   private CommunicationBus communicationBus;
   private DomainEventBus eventBus;
@@ -29,13 +31,17 @@ public class Application implements ApplicationContext {
 
   public Application(Vertx vertx) {
     this.vertx = vertx;
-    this.config = ConfigRetriever.create(vertx).getConfig().result();
+  }
 
-    configureCodec();
-
-    eventBus = createEventBus();
-    communicationBus = createCommunicationBus();
-    dbGateway = createDbGateway();
+  public Future<Void> run(String[] args) {
+    return ConfigRetriever.create(vertx).getConfig()
+      .onSuccess(config -> {
+        this.config = config;
+        configureCodec();
+        eventBus = createEventBus();
+        communicationBus = createCommunicationBus();
+        dbGateway = createDbGateway();
+      }).map(x -> null);
   }
 
   @Override
