@@ -76,11 +76,6 @@ public class CallManagementIT {
       .onFailure(e -> context.failNow(e));
   }
 
-  private JsonObject createConfig() {
-    JsonObject config = new JsonObject();
-    return config;
-  }
-
   private CreateCall createCallCommand() {
     LocalDateTime now = LocalDateTime.now();
     var command = new CreateCall();
