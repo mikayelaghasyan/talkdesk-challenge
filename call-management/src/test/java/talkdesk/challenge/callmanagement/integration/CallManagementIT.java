@@ -60,16 +60,17 @@ public class CallManagementIT {
       .compose(x -> app.communicationBus().ask("call-management.get-calls", getCallsQuery(), new TypeReference<Paginated<Call>>() {}))
       .map(x -> x.items())
       .onSuccess(calls -> context.verify(() -> {
-        assertThat(calls.length, is(1));
-        assertThat(calls, hasItemInArray(expectedCall));
+        assertThat(calls.size(), is(1));
+        assertThat(calls, hasItem(expectedCall));
       }))
-      .compose(calls -> app.communicationBus().order("call-management.delete-call", deleteCallCommand(calls[0].uuid())))
+      .compose(calls -> app.communicationBus().order("call-management.delete-call", deleteCallCommand(calls.stream().findFirst().get().uuid())))
       .onSuccess(x -> context.verify(() -> {
         assertThat(eventLogger.events(), hasItem(equalTo(expectedCallDeletedEvent)));
       }))
-      .compose(x -> app.communicationBus().ask("call-management.get-calls", getCallsQuery(), Call[].class))
+      .compose(x -> app.communicationBus().ask("call-management.get-calls", getCallsQuery(), new TypeReference<Paginated<Call>>() {}))
+      .map(x -> x.items())
       .onSuccess(calls -> context.verify(() -> {
-        assertThat(calls, emptyArray());
+        assertThat(calls, empty());
       }))
       .onSuccess(x -> context.completeNow())
       .onFailure(e -> context.failNow(e));

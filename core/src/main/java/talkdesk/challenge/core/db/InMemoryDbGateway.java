@@ -3,6 +3,7 @@ package talkdesk.challenge.core.db;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import talkdesk.challenge.core.error.NotFound;
 import talkdesk.challenge.core.model.Order;
 import talkdesk.challenge.core.model.Page;
 import talkdesk.challenge.core.runtime.ApplicationContext;
@@ -24,6 +25,17 @@ public class InMemoryDbGateway implements DbGateway {
     dataMap.computeIfAbsent(name, k -> new ArrayList<>())
       .add(obj);
     return Future.succeededFuture(obj);
+  }
+
+  @Override
+  public Future<Void> delete(String name, UUID uuid) {
+    boolean removed = dataMap.computeIfAbsent(name, k -> new ArrayList<>())
+      .removeIf(item -> Objects.equals(item.getString("uuid"), uuid.toString()));
+    if (removed) {
+      return Future.succeededFuture();
+    } else {
+      return Future.failedFuture(new NotFound(uuid));
+    }
   }
 
   @Override

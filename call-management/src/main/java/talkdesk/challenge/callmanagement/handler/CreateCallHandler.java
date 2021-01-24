@@ -1,6 +1,5 @@
 package talkdesk.challenge.callmanagement.handler;
 
-import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import talkdesk.challenge.callmanagement.command.CreateCall;
 import talkdesk.challenge.callmanagement.event.CallCreated;
@@ -15,12 +14,8 @@ public class CreateCallHandler extends CommandHandler<CreateCall> {
     return Future.succeededFuture(createCalculateCostQuery(command))
       .compose(costQuery -> context.communicationBus()
         .ask("call-management.calculate-cost", costQuery, Cost.class))
-      .compose(cost -> CompositeFuture.all(
-        Future.succeededFuture(createCall(command))
-          .compose(obj -> context.repositoryOf("call", Call.class).save(obj)),
-        Future.succeededFuture(createEvent(command, cost))
-          .compose(event -> context.eventBus().publish("call", event))
-      )).map(x -> null);
+      .compose(cost -> context.repositoryOf("call", Call.class).save(createCall(command))
+        .compose(x -> context.eventBus().publish("call", createEvent(command, cost))));
   }
 
   private Call createCall(CreateCall command) {

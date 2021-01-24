@@ -2,7 +2,6 @@ package talkdesk.challenge.callmanagement.handler;
 
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonObject;
 import talkdesk.challenge.callmanagement.model.Call;
 import talkdesk.challenge.callmanagement.query.GetCalls;
 import talkdesk.challenge.core.communication.QueryContext;
@@ -25,6 +24,6 @@ public class GetCallsHandler extends QueryHandler<GetCalls, Paginated<Call>> {
     Future<List<Call>> result = repository.findMany(condition, query.page(), query.order());
     Future<Long> count = repository.count(condition);
     return CompositeFuture.all(result, count)
-      .map(x -> new Paginated<>(result.result().toArray(Call[]::new), query.page(), count.result()));
+      .map(x -> new Paginated<>(result.result(), query.page(), count.result()));
   }
 }

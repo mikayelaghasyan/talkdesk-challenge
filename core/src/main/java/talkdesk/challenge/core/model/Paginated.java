@@ -4,24 +4,24 @@ import java.util.List;
 import java.util.Objects;
 
 public class Paginated<U> {
-  private U[] items;
+  private List<U> items;
   private Page page;
   private Long totalCount;
 
   public Paginated() {
   }
 
-  public Paginated(U[] items, Page page, Long totalCount) {
+  public Paginated(List<U> items, Page page, Long totalCount) {
     this.items = items;
     this.page = page;
     this.totalCount = totalCount;
   }
 
-  public U[] items() {
+  public List<U> items() {
     return items;
   }
 
-  public void items(U[] items) {
+  public void items(List<U> items) {
     this.items = items;
   }
 
