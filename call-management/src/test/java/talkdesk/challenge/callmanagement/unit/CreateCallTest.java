@@ -78,6 +78,7 @@ public class CreateCallTest extends BaseCallTest {
     call.startedAt(command.startedAt());
     call.endedAt(command.endedAt());
     call.type(command.type());
+    call.cost(cost);
     return call;
   }
 

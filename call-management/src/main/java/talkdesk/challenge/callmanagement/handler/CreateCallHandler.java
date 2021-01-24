@@ -14,11 +14,11 @@ public class CreateCallHandler extends CommandHandler<CreateCall> {
     return Future.succeededFuture(createCalculateCostQuery(command))
       .compose(costQuery -> context.communicationBus()
         .ask("call-management.calculate-cost", costQuery, Cost.class))
-      .compose(cost -> context.repositoryOf("call", Call.class).save(createCall(command))
+      .compose(cost -> context.repositoryOf("call", Call.class).save(createCall(command, cost))
         .compose(x -> context.eventBus().publish("call", createEvent(command, cost))));
   }
 
-  private Call createCall(CreateCall command) {
+  private Call createCall(CreateCall command, Cost cost) {
     var call = new Call();
     call.uuid(command.uuid());
     call.callerNumber(command.callerNumber());
@@ -26,6 +26,7 @@ public class CreateCallHandler extends CommandHandler<CreateCall> {
     call.startedAt(command.startedAt());
     call.endedAt(command.endedAt());
     call.type(command.type());
+    call.cost(cost);
     return call;
   }
 

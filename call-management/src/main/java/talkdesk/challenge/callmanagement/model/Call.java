@@ -11,6 +11,7 @@ public class Call {
   private LocalDateTime startedAt;
   private LocalDateTime endedAt;
   private CallType type;
+  private Cost cost;
 
   public Call() {
   }
@@ -63,16 +64,24 @@ public class Call {
     this.type = type;
   }
 
+  public Cost cost() {
+    return cost;
+  }
+
+  public void cost(Cost cost) {
+    this.cost = cost;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Call that = (Call) o;
-    return uuid.equals(that.uuid) && callerNumber.equals(that.callerNumber) && calleeNumber.equals(that.calleeNumber) && startedAt.equals(that.startedAt) && endedAt.equals(that.endedAt) && type == that.type;
+    return uuid.equals(that.uuid) && callerNumber.equals(that.callerNumber) && calleeNumber.equals(that.calleeNumber) && startedAt.equals(that.startedAt) && endedAt.equals(that.endedAt) && type == that.type && cost.equals(that.cost);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, callerNumber, calleeNumber, startedAt, endedAt, type);
+    return Objects.hash(uuid, callerNumber, calleeNumber, startedAt, endedAt, type, cost);
   }
 }

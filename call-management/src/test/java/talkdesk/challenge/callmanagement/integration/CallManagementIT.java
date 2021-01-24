@@ -49,8 +49,8 @@ public class CallManagementIT {
   @Test
   public void callTest(Vertx vertx, VertxTestContext context) {
     var createCallCommand = createCallCommand();
-    var expectedCall = createExpectedObject(createCallCommand);
     var expectedCost = Cost.of(5 * 10 + 3 * 5);
+    var expectedCall = createExpectedObject(createCallCommand, expectedCost);
     var expectedCallCreatedEvent = createExpectedCallCreatedEvent(createCallCommand, expectedCost);
     var expectedCallDeletedEvent = createExpectedCallDeletedEvent(expectedCall.uuid());
     app.communicationBus().order("call-management.create-call", createCallCommand)
@@ -88,7 +88,7 @@ public class CallManagementIT {
     return command;
   }
 
-  private Call createExpectedObject(CreateCall command) {
+  private Call createExpectedObject(CreateCall command, Cost cost) {
     var call = new Call();
     call.uuid(command.uuid());
     call.callerNumber(command.callerNumber());
@@ -96,6 +96,7 @@ public class CallManagementIT {
     call.startedAt(command.startedAt());
     call.endedAt(command.endedAt());
     call.type(command.type());
+    call.cost(cost);
     return call;
   }
 
