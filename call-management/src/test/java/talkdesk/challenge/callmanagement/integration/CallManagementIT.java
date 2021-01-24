@@ -34,8 +34,7 @@ public class CallManagementIT {
 
   @BeforeEach
   public void setUp(Vertx vertx) {
-    JsonObject config = createConfig();
-    app = new Application(vertx, config);
+    app = new Application(vertx);
 
     eventLogger = new CallEventLogger();
     app.eventBus().subscribe("call", eventLogger);
@@ -51,7 +50,7 @@ public class CallManagementIT {
     var expectedCost = Cost.of(5 * 10 + 3 * 5);
     var expectedCallCreatedEvent = createExpectedCallCreatedEvent(createCallCommand, expectedCost);
     var expectedCallDeletedEvent = createExpectedCallDeletedEvent(expectedCall.uuid());
-    app.communicationBus().order("call-management.create-call", createCallCommand())
+    app.communicationBus().order("call-management.create-call", createCallCommand)
       .onSuccess(x -> context.verify(() -> {
         assertThat(eventLogger.events(), hasItem(equalTo(expectedCallCreatedEvent)));
       }))
@@ -85,7 +84,7 @@ public class CallManagementIT {
     command.calleeNumber(Phone.of("54321"));
     command.startedAt(now.minusMinutes(10));
     command.endedAt(now.minusMinutes(2));
-    command.type(CallType.INBOUND);
+    command.type(CallType.OUTBOUND);
     return command;
   }
 

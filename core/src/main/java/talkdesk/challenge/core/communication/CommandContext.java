@@ -1,5 +1,6 @@
 package talkdesk.challenge.core.communication;
 
+import talkdesk.challenge.core.db.DbGateway;
 import talkdesk.challenge.core.db.ReadWriteRepository;
 import talkdesk.challenge.core.domainevent.DomainEventBus;
 
@@ -9,11 +10,13 @@ import java.util.Map;
 public class CommandContext {
   private final CommunicationBus communicationBus;
   private final DomainEventBus eventBus;
+  private final DbGateway dbGateway;
   private Map<String, ReadWriteRepository<?>> repositories;
 
-  public CommandContext(CommunicationBus communicationBus, DomainEventBus eventBus) {
+  public CommandContext(CommunicationBus communicationBus, DomainEventBus eventBus, DbGateway dbGateway) {
     this.communicationBus = communicationBus;
     this.eventBus = eventBus;
+    this.dbGateway = dbGateway;
     this.repositories = new HashMap<>();
   }
 
@@ -28,6 +31,6 @@ public class CommandContext {
   @SuppressWarnings("unchecked")
   public <U> ReadWriteRepository<U> repositoryOf(String name) {
     return (ReadWriteRepository<U>) repositories
-      .computeIfAbsent(name, k -> new ReadWriteRepository<U>(name));
+      .computeIfAbsent(name, k -> new ReadWriteRepository<U>(k, dbGateway));
   }
 }

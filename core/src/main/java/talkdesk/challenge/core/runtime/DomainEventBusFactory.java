@@ -2,7 +2,7 @@ package talkdesk.challenge.core.runtime;
 
 import io.vertx.core.json.JsonObject;
 import talkdesk.challenge.core.domainevent.DomainEventBus;
-import talkdesk.challenge.core.domainevent.vertx.VertxEventBus;
+import talkdesk.challenge.core.vertx.VertxEventBus;
 
 public class DomainEventBusFactory {
   private final ApplicationContext applicationContext;

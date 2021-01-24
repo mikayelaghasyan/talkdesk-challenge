@@ -1,5 +1,6 @@
 package talkdesk.challenge.core.communication;
 
+import talkdesk.challenge.core.db.DbGateway;
 import talkdesk.challenge.core.db.ReadOnlyRepository;
 
 import java.util.HashMap;
@@ -7,10 +8,12 @@ import java.util.Map;
 
 public class QueryContext {
   private final CommunicationBus communicationBus;
+  private final DbGateway dbGateway;
   private Map<String, ReadOnlyRepository<?>> repositories;
 
-  public QueryContext(CommunicationBus communicationBus) {
+  public QueryContext(CommunicationBus communicationBus, DbGateway dbGateway) {
     this.communicationBus = communicationBus;
+    this.dbGateway = dbGateway;
     this.repositories = new HashMap<>();
   }
 
@@ -21,6 +24,6 @@ public class QueryContext {
   @SuppressWarnings("unchecked")
   public <U> ReadOnlyRepository<U> repositoryOf(String name) {
     return (ReadOnlyRepository<U>) repositories
-      .computeIfAbsent(name, k -> new ReadOnlyRepository<U>(name));
+      .computeIfAbsent(name, k -> new ReadOnlyRepository<U>(k, dbGateway));
   }
 }

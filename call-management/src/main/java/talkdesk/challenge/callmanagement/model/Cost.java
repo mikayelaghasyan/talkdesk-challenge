@@ -1,5 +1,7 @@
 package talkdesk.challenge.callmanagement.model;
 
+import java.util.Objects;
+
 public class Cost {
   private long longValue;
 
@@ -28,6 +30,27 @@ public class Cost {
 
   public double value() {
     return longValue / 100.0;
+  }
+
+  public Cost add(Cost other) {
+    return Cost.of(this.longValue + other.longValue());
+  }
+
+  public Cost multiply(Long multiplier) {
+    return Cost.of(this.longValue * multiplier);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Cost cost = (Cost) o;
+    return longValue == cost.longValue;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(longValue);
   }
 
   @Override

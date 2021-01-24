@@ -11,19 +11,15 @@ import talkdesk.challenge.core.communication.CommandContext;
 import talkdesk.challenge.core.communication.CommandHandler;
 
 public class CreateCallHandler extends CommandHandler<CreateCall> {
-  public CreateCallHandler() {
-    super(CreateCall.class);
-  }
-
   public Future<Void> handle(CommandContext context, CreateCall command) {
-    return Future.succeededFuture(createCalculateCostQuery())
+    return Future.succeededFuture(createCalculateCostQuery(command))
       .compose(costQuery -> context.communicationBus()
         .ask("call-management.calculate-cost", costQuery, Cost.class))
       .compose(cost -> CompositeFuture.all(
         Future.succeededFuture(createCall(command))
           .compose(obj -> context.<Call>repositoryOf("call").save(obj)),
         Future.succeededFuture(createEvent(command, cost))
-          .compose(event -> context.eventBus().publish(event))
+          .compose(event -> context.eventBus().publish("call", event))
       )).map(x -> null);
   }
 
@@ -38,8 +34,12 @@ public class CreateCallHandler extends CommandHandler<CreateCall> {
     return call;
   }
 
-  private CalculateCost createCalculateCostQuery() {
-    return new CalculateCost();
+  private CalculateCost createCalculateCostQuery(CreateCall command) {
+    var query = new CalculateCost();
+    query.startedAt(command.startedAt());
+    query.endedAt(command.endedAt());
+    query.type(command.type());
+    return query;
   }
 
   private CallCreated createEvent(CreateCall command, Cost cost) {

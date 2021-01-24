@@ -10,7 +10,7 @@ public class CallManagement extends Node {
   @Override
   protected Future<Void> run(RuntimeContext context) {
     context.communicationBus().obeyTo("call-management.create-call", new CreateCallHandler());
-    context.communicationBus().replyTo("call-management.calculate-cost", new CalculateCostHandler());
+    context.communicationBus().replyTo("call-management.calculate-cost", new CalculateCostHandler(context.config().getJsonObject("tariff")));
     return Future.succeededFuture();
   }
 }
