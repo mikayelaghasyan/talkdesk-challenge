@@ -17,7 +17,7 @@ public class CreateCallHandler extends CommandHandler<CreateCall> {
         .ask("call-management.calculate-cost", costQuery, Cost.class))
       .compose(cost -> CompositeFuture.all(
         Future.succeededFuture(createCall(command))
-          .compose(obj -> context.<Call>repositoryOf("call").save(obj)),
+          .compose(obj -> context.repositoryOf("call", Call.class).save(obj)),
         Future.succeededFuture(createEvent(command, cost))
           .compose(event -> context.eventBus().publish("call", event))
       )).map(x -> null);

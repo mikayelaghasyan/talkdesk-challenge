@@ -29,8 +29,8 @@ public class CommandContext {
   }
 
   @SuppressWarnings("unchecked")
-  public <U> ReadWriteRepository<U> repositoryOf(String name) {
+  public <U> ReadWriteRepository<U> repositoryOf(String name, Class<U> itemClass) {
     return (ReadWriteRepository<U>) repositories
-      .computeIfAbsent(name, k -> new ReadWriteRepository<U>(k, dbGateway));
+      .computeIfAbsent(name, k -> new ReadWriteRepository<>(k, dbGateway, itemClass));
   }
 }

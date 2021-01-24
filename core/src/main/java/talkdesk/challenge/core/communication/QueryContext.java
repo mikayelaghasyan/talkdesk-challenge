@@ -22,8 +22,8 @@ public class QueryContext {
   }
 
   @SuppressWarnings("unchecked")
-  public <U> ReadOnlyRepository<U> repositoryOf(String name) {
+  public <U> ReadOnlyRepository<U> repositoryOf(String name, Class<U> itemClass) {
     return (ReadOnlyRepository<U>) repositories
-      .computeIfAbsent(name, k -> new ReadOnlyRepository<U>(k, dbGateway));
+      .computeIfAbsent(name, k -> new ReadOnlyRepository<>(k, dbGateway, itemClass));
   }
 }

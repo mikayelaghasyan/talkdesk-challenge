@@ -62,9 +62,9 @@ public abstract class BaseCallTest {
   }
 
   private void stubRepositories() {
-    lenient().when(queryContext.repositoryOf("call"))
+    lenient().when(queryContext.repositoryOf("call", Call.class))
       .thenAnswer(x -> readOnlyCallRepository);
-    lenient().when(commandContext.repositoryOf("call"))
+    lenient().when(commandContext.repositoryOf("call", Call.class))
       .thenAnswer(x -> readWriteCallRepository);
     lenient().when(readWriteCallRepository.save(any()))
       .thenAnswer(x -> Future.succeededFuture());

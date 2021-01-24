@@ -1,5 +1,6 @@
 package talkdesk.challenge.callmanagement.integration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxExtension;
@@ -18,6 +19,8 @@ import talkdesk.challenge.callmanagement.model.CallType;
 import talkdesk.challenge.callmanagement.model.Cost;
 import talkdesk.challenge.callmanagement.model.Phone;
 import talkdesk.challenge.callmanagement.query.GetCalls;
+import talkdesk.challenge.core.model.Page;
+import talkdesk.challenge.core.model.Paginated;
 import talkdesk.challenge.core.runtime.Application;
 
 import java.time.LocalDateTime;
@@ -54,7 +57,8 @@ public class CallManagementIT {
       .onSuccess(x -> context.verify(() -> {
         assertThat(eventLogger.events(), hasItem(equalTo(expectedCallCreatedEvent)));
       }))
-      .compose(x -> app.communicationBus().ask("call-management.get-calls", getCallsQuery(), Call[].class))
+      .compose(x -> app.communicationBus().ask("call-management.get-calls", getCallsQuery(), new TypeReference<Paginated<Call>>() {}))
+      .map(x -> x.items())
       .onSuccess(calls -> context.verify(() -> {
         assertThat(calls.length, is(1));
         assertThat(calls, hasItemInArray(expectedCall));
@@ -119,10 +123,13 @@ public class CallManagementIT {
 
   private GetCalls getCallsQuery() {
     var query = new GetCalls();
+    query.page(new Page(0, 10));
     return query;
   }
 
   private DeleteCall deleteCallCommand(UUID uuid) {
-    return null;
+    var command = new DeleteCall();
+    command.uuid(uuid);
+    return command;
   }
 }

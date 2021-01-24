@@ -16,8 +16,8 @@ public class CalculateCostHandler extends QueryHandler<CalculateCost, Cost> {
   }
 
   @Override
-  public Future<Cost> handle(QueryContext context, CalculateCost input) {
-    return Future.succeededFuture(tariff.calculateCost(input.startedAt(), input.endedAt(), input.type()));
+  public Future<Cost> handle(QueryContext context, CalculateCost query) {
+    return Future.succeededFuture(tariff.calculateCost(query.startedAt(), query.endedAt(), query.type()));
   }
 
 }

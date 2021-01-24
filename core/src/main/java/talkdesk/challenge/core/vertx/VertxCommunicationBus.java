@@ -1,9 +1,11 @@
 package talkdesk.challenge.core.vertx;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.jackson.DatabindCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import talkdesk.challenge.core.communication.*;
@@ -24,6 +26,15 @@ public class VertxCommunicationBus extends VertxBus implements CommunicationBus 
     return applicationContext.vertx().eventBus().<Buffer>request(address, Json.encodeToBuffer(query), optionsFor(query))
       .map(reply -> reply.body())
       .map(result -> Json.decodeValue(result, resultClass))
+      .onSuccess(reply -> log.debug("received: ({}, {})", address, reply))
+      .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage()));
+  }
+
+  public <U, V> Future<V> ask(String address, U query, TypeReference<V> resultTypeRef) {
+    log.debug("sent: ({}, {})", address, query);
+    return applicationContext.vertx().eventBus().<Buffer>request(address, Json.encodeToBuffer(query), optionsFor(query))
+      .map(reply -> reply.body())
+      .map(result -> ((DatabindCodec)Json.CODEC).fromBuffer(result, resultTypeRef))
       .onSuccess(reply -> log.debug("received: ({}, {})", address, reply))
       .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage()));
   }
