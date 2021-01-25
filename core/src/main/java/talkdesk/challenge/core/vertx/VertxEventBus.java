@@ -21,7 +21,7 @@ public class VertxEventBus extends VertxBus implements DomainEventBus {
   }
 
   @Override
-  public Future<Void> publish(String address, DomainEvent event) {
+  public <U extends DomainEvent> Future<Void> publish(String address, U event) {
     log.debug("sent: ({}, {})", address, event);
     applicationContext.vertx().eventBus().publish(address, Json.encodeToBuffer(event), optionsFor(event));
     return Future.succeededFuture();
@@ -40,6 +40,6 @@ public class VertxEventBus extends VertxBus implements DomainEventBus {
   }
 
   private EventContext createEventContext() {
-    return new EventContext(applicationContext.communicationBus());
+    return new EventContext(applicationContext.communicationBus(), applicationContext.eventBus(), applicationContext.dbGateway());
   }
 }

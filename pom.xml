@@ -17,6 +17,7 @@
   <modules>
     <module>core</module>
     <module>call-management</module>
+    <module>call-statistics</module>
   </modules>
 
   <dependencyManagement>

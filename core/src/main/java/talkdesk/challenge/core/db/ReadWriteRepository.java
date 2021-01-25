@@ -2,6 +2,7 @@ package talkdesk.challenge.core.db;
 
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
+import talkdesk.challenge.core.error.NotFound;
 
 import java.util.UUID;
 
@@ -17,6 +18,10 @@ public class ReadWriteRepository<U> extends ReadOnlyRepository<U> {
 
   public Future<Void> delete(UUID uuid) {
     return dbGateway.delete(name, uuid)
-      .map(x -> null);
+      .onSuccess(deleted -> {
+        if (!deleted) {
+          throw new NotFound(uuid);
+        }
+      }).map(x -> null);
   }
 }

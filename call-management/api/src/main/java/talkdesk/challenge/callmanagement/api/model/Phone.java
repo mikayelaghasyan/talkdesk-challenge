@@ -36,4 +36,9 @@ public class Phone {
   public int hashCode() {
     return Objects.hash(number);
   }
+
+  @Override
+  public String toString() {
+    return String.format("%s", number());
+  }
 }

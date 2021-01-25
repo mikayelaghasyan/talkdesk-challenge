@@ -2,7 +2,7 @@ package talkdesk.challenge.callmanagement.api.model;
 
 import java.util.Objects;
 
-public class Cost {
+public class Cost implements Comparable<Cost> {
   private long longValue;
 
   public Cost() {
@@ -36,6 +36,13 @@ public class Cost {
     return Cost.of(this.longValue + other.longValue());
   }
 
+  public Cost remove(Cost other) {
+    if (this.longValue < other.longValue()) {
+      throw new IllegalStateException("Cost can't be negative");
+    }
+    return Cost.of(this.longValue - other.longValue());
+  }
+
   public Cost multiply(Long multiplier) {
     return Cost.of(this.longValue * multiplier);
   }
@@ -56,5 +63,10 @@ public class Cost {
   @Override
   public String toString() {
     return String.format("%.2f", value());
+  }
+
+  @Override
+  public int compareTo(Cost other) {
+    return (int)(longValue - other.longValue());
   }
 }

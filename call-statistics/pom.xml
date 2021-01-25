@@ -6,18 +6,16 @@
 
   <parent>
     <groupId>talkdesk-challenge</groupId>
-    <artifactId>call-management</artifactId>
+    <artifactId>talkdesk-challenge</artifactId>
     <version>1.0</version>
   </parent>
 
-  <artifactId>call-management-api</artifactId>
+  <artifactId>call-statistics</artifactId>
   <version>1.0</version>
+  <packaging>pom</packaging>
 
-  <dependencies>
-    <dependency>
-      <groupId>talkdesk-challenge</groupId>
-      <artifactId>core</artifactId>
-      <version>1.0</version>
-    </dependency>
-  </dependencies>
+  <modules>
+    <module>api</module>
+    <module>module</module>
+  </modules>
 </project>
