@@ -1,6 +1,7 @@
 package talkdesk.challenge.callmanagement.integration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
@@ -58,6 +59,7 @@ public class CallManagementIT {
     var expectedCallCreatedEvent = createExpectedCallCreatedEvent(createCallCommand, expectedCost);
     var expectedCallDeletedEvent = createExpectedCallDeletedEvent(expectedCall.uuid());
     app.communicationBus().order("call-management.create-call", createCallCommand)
+      .compose(x -> asyncSleep(500))
       .onSuccess(x -> context.verify(() -> {
         assertThat(eventLogger.events(), hasItem(equalTo(expectedCallCreatedEvent)));
       }))
@@ -68,6 +70,7 @@ public class CallManagementIT {
         assertThat(calls, hasItem(expectedCall));
       }))
       .compose(calls -> app.communicationBus().order("call-management.delete-call", deleteCallCommand(calls.stream().findFirst().get().uuid())))
+      .compose(x -> asyncSleep(500))
       .onSuccess(x -> context.verify(() -> {
         assertThat(eventLogger.events(), hasItem(equalTo(expectedCallDeletedEvent)));
       }))
@@ -132,5 +135,15 @@ public class CallManagementIT {
     var command = new DeleteCall();
     command.uuid(uuid);
     return command;
+  }
+
+  private Future<Void> asyncSleep(long millis) {
+    return app.vertx().executeBlocking(ar -> {
+      try {
+        Thread.sleep(millis);
+        ar.complete();
+      } catch (InterruptedException ignored) {
+      }
+    });
   }
 }

@@ -5,5 +5,10 @@
     "username": "stat",
     "password": "stat",
     "db_name": "stat-db"
+  },
+  "eventBus": {
+    "class": "talkdesk.challenge.kafka.KafkaEventBus",
+    "bootstrapServers": "localhost:9092",
+    "groupId": "call-statistics"
   }
 }

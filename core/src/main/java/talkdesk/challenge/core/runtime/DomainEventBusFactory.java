@@ -11,8 +11,19 @@ public class DomainEventBusFactory {
     this.applicationContext = applicationContext;
   }
 
+  @SuppressWarnings("unchecked")
   public DomainEventBus createEventBus(JsonObject config) {
-    throw new UnsupportedOperationException();
+    try {
+      if (config.containsKey("class")) {
+        String className = config.getString("class");
+        Class<DomainEventBus> cls = (Class<DomainEventBus>) Class.forName(className);
+        return cls.getConstructor(ApplicationContext.class, JsonObject.class).newInstance(applicationContext, config);
+      } else {
+        throw new RuntimeException("Domain event bus class not specified");
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(String.format("Can't load domain event bus: %s", e.getLocalizedMessage()));
+    }
   }
 
   public DomainEventBus createDefaultEventBus() {

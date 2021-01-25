@@ -11,6 +11,7 @@ public abstract class CallEvent implements DomainEvent {
   public CallEvent() {
   }
 
+  @Override
   public UUID uuid() {
     return uuid;
   }

@@ -9,7 +9,7 @@ public class FullCallStatisticsIT extends CallStatisticsIT {
   @Override
   protected String[] programArgs() {
     URL mongoConfigUrl = getClass().getClassLoader()
-      .getResource("additional-config/mongo.json");
+      .getResource("additional-config/external.json");
 
     return new String[] { mongoConfigUrl.getPath() };
   }

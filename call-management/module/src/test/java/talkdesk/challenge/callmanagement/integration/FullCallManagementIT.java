@@ -9,7 +9,7 @@ public class FullCallManagementIT extends CallManagementIT {
   @Override
   protected String[] programArgs() {
     URL mongoConfigUrl = getClass().getClassLoader()
-      .getResource("additional-config/mongo.json");
+      .getResource("additional-config/external.json");
 
     return new String[] { mongoConfigUrl.getPath() };
   }

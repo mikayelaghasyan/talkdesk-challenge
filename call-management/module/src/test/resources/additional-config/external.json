@@ -5,5 +5,10 @@
     "username": "call",
     "password": "call",
     "db_name": "call-db"
+  },
+  "eventBus": {
+    "class": "talkdesk.challenge.kafka.KafkaEventBus",
+    "bootstrapServers": "localhost:9092",
+    "groupId": "call-management"
   }
 }
