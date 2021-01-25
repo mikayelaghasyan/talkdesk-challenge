@@ -6,7 +6,7 @@ import talkdesk.challenge.callmanagement.api.event.CallDeleted;
 import talkdesk.challenge.callmanagement.api.event.CallEvent;
 import talkdesk.challenge.callstatistics.api.model.CallSnapshot;
 import talkdesk.challenge.callstatistics.api.model.Stat;
-import talkdesk.challenge.core.db.Condition;
+import talkdesk.challenge.core.db.condition.Condition;
 import talkdesk.challenge.core.db.ReadWriteRepository;
 import talkdesk.challenge.core.domainevent.EventContext;
 import talkdesk.challenge.core.domainevent.EventSubscriber;
@@ -27,7 +27,7 @@ public class CallEventHandler extends EventSubscriber<CallEvent> {
     ReadWriteRepository<Stat> statRepository = context.repositoryOf("stat", Stat.class);
     callSnapshotRepository.save(createCallSnapshot(event))
       .compose(callSnapshot -> Future.succeededFuture(callSnapshot.startedAt().toLocalDate())
-        .compose(date -> statRepository.findFirst(Condition.eq("date", date))
+        .compose(date -> statRepository.findFirst(Condition.eq("date", date.toString()))
           .map(item -> item.orElseGet(() -> new Stat(date)))
           .map(stat -> addCallToStat(stat, callSnapshot)))
         .compose(stat -> statRepository.save(stat)));
@@ -60,7 +60,7 @@ public class CallEventHandler extends EventSubscriber<CallEvent> {
     callSnapshotRepository.findOne(event.uuid())
       .map(callSnapshot -> callSnapshotRepository.delete(callSnapshot.uuid())
         .map(x -> callSnapshot.startedAt().toLocalDate())
-        .compose(date -> statRepository.findFirst(Condition.eq("date", date))
+        .compose(date -> statRepository.findFirst(Condition.eq("date", date.toString()))
           .map(item -> item.orElseThrow(() -> new NotFound("Stat not found")))
           .map(stat -> removeCallFromStat(stat, callSnapshot)))
         .compose(stat -> statRepository.save(stat)));

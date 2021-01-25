@@ -6,7 +6,7 @@ import talkdesk.challenge.callmanagement.api.model.Call;
 import talkdesk.challenge.callmanagement.api.query.GetCalls;
 import talkdesk.challenge.core.communication.QueryContext;
 import talkdesk.challenge.core.communication.QueryHandler;
-import talkdesk.challenge.core.db.Condition;
+import talkdesk.challenge.core.db.condition.Condition;
 import talkdesk.challenge.core.db.ReadOnlyRepository;
 import talkdesk.challenge.core.model.Paginated;
 

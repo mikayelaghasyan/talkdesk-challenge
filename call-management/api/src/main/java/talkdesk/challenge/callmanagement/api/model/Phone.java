@@ -1,7 +1,14 @@
 package talkdesk.challenge.callmanagement.api.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import talkdesk.challenge.callmanagement.api.serdes.PhoneDeserializer;
+import talkdesk.challenge.callmanagement.api.serdes.PhoneSerializer;
+
 import java.util.Objects;
 
+@JsonSerialize(using = PhoneSerializer.class)
+@JsonDeserialize(using = PhoneDeserializer.class)
 public class Phone {
   private String number;
 

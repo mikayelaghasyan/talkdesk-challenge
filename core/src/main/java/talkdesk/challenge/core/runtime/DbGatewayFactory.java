@@ -11,8 +11,19 @@ public class DbGatewayFactory {
     this.applicationContext = applicationContext;
   }
 
+  @SuppressWarnings("unchecked")
   public DbGateway createDbGateway(JsonObject config) {
-    throw new UnsupportedOperationException();
+    try {
+      if (config.containsKey("class")) {
+        String className = config.getString("class");
+        Class<DbGateway> cls = (Class<DbGateway>) Class.forName(className);
+        return cls.getConstructor(ApplicationContext.class, JsonObject.class).newInstance(applicationContext, config);
+      } else {
+        throw new RuntimeException("DB gateway class not specified");
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(String.format("Can't load DB gateway: %s", e.getLocalizedMessage()));
+    }
   }
 
   public DbGateway createDefaultDbGateway() {

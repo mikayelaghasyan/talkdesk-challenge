@@ -18,6 +18,7 @@
     <module>core</module>
     <module>call-management</module>
     <module>call-statistics</module>
+    <module>mongo-gateway</module>
   </modules>
 
   <dependencyManagement>

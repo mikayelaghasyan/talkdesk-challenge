@@ -5,6 +5,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,8 +40,20 @@ public class CallStatisticsIT {
   @BeforeEach
   public void setUp(Vertx vertx, VertxTestContext context) {
     app = new Application(vertx);
-    app.run(new String[0])
+    app.run(programArgs())
       .onSuccess(x -> app.deployNode(new CallStatistics()))
+      .onSuccess(x -> context.completeNow())
+      .onFailure(e -> context.failNow(e));
+  }
+
+  protected String[] programArgs() {
+    return new String[0];
+  }
+
+  @AfterEach
+  public void tearDown(Vertx vertx, VertxTestContext context) {
+    app.dbGateway().deleteAll("stat")
+      .compose(x -> app.dbGateway().deleteAll("call-snapshot"))
       .onSuccess(x -> context.completeNow())
       .onFailure(e -> context.failNow(e));
   }
@@ -77,6 +90,7 @@ public class CallStatisticsIT {
       .compose(x -> publishEvent(event4))
       .compose(x -> publishEvent(event5))
       .compose(x -> publishEvent(event6))
+      .compose(x -> asyncSleep(500))
       .compose(x -> app.communicationBus().ask("call-statistics.get-stats", getStatsQuery(), new TypeReference<List<Stat>>() {}))
       .onSuccess(stats -> context.verify(() -> {
         assertThat(stats.size(), is(2));
@@ -128,6 +142,17 @@ public class CallStatisticsIT {
   }
 
   private Future<Void> publishEvent(CallEvent event) {
-    return app.eventBus().publish("call", event);
+    return asyncSleep(500)
+      .compose(x -> app.eventBus().publish("call", event));
+  }
+
+  private Future<Void> asyncSleep(long millis) {
+    return app.vertx().executeBlocking(ar -> {
+      try {
+        Thread.sleep(millis);
+        ar.complete();
+      } catch (InterruptedException ignored) {
+      }
+    });
   }
 }

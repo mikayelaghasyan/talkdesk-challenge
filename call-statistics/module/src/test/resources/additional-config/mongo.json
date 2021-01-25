@@ -1,0 +1,9 @@
+{
+  "dbGateway": {
+    "class": "talkdesk.challenge.mongo.MongoDbGateway",
+    "host": "localhost",
+    "username": "stat",
+    "password": "stat",
+    "db_name": "stat-db"
+  }
+}

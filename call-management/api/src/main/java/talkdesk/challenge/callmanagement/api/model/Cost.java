@@ -1,7 +1,14 @@
 package talkdesk.challenge.callmanagement.api.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import talkdesk.challenge.callmanagement.api.serdes.CostDeserializer;
+import talkdesk.challenge.callmanagement.api.serdes.CostSerializer;
+
 import java.util.Objects;
 
+@JsonSerialize(using = CostSerializer.class)
+@JsonDeserialize(using = CostDeserializer.class)
 public class Cost implements Comparable<Cost> {
   private long longValue;
 

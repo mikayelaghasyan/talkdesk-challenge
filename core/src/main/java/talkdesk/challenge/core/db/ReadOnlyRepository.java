@@ -2,6 +2,7 @@ package talkdesk.challenge.core.db;
 
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
+import talkdesk.challenge.core.db.condition.Condition;
 import talkdesk.challenge.core.error.NotFound;
 import talkdesk.challenge.core.model.Order;
 import talkdesk.challenge.core.model.Page;

@@ -24,6 +24,11 @@
       <artifactId>call-management-api</artifactId>
       <version>1.0</version>
     </dependency>
+    <dependency>
+      <groupId>talkdesk-challenge</groupId>
+      <artifactId>mongo-gateway</artifactId>
+      <version>1.0</version>
+    </dependency>
   </dependencies>
 
   <build>

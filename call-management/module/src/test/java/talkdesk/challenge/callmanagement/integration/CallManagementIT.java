@@ -37,13 +37,17 @@ public class CallManagementIT {
   @BeforeEach
   public void setUp(Vertx vertx, VertxTestContext context) {
     app = new Application(vertx);
-    app.run(new String[0])
+    app.run(programArgs())
       .onSuccess(x -> {
         eventLogger = new CallEventLogger();
         app.eventBus().subscribe("call", eventLogger);
       }).onSuccess(x -> app.deployNode(new CallManagement()))
       .onSuccess(x -> context.completeNow())
       .onFailure(e -> context.failNow(e));
+  }
+
+  protected String[] programArgs() {
+    return new String[0];
   }
 
   @Test
