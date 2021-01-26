@@ -1,0 +1,309 @@
+openapi: 3.0.3
+info:
+  title: 'Talkdesk Challenge API'
+  version: '1.0'
+  contact:
+    name: 'Mikayel Aghasyan'
+    email: 'mikayel.aghasyan@gmail.com'
+servers:
+  - url: 'http://localhost:8080/api'
+    description: 'Local Server'
+  - url: '{scheme}://{host}/api'
+    description: 'Custom Server'
+    variables:
+      scheme:
+        enum:
+          - http
+          - https
+        default: http
+      host:
+        default: 'localhost:8080'
+paths:
+  /calls:
+    post:
+      tags:
+        - Calls
+      operationId: 'Add call'
+      description: 'Adds a single call'
+      requestBody:
+        $ref: '#/components/requestBodies/AddCall'
+      responses:
+        201:
+          $ref: '#/components/responses/AddCallResponse'
+        400:
+          description: 'Request is not valid'
+      x-handler:
+        address: calls.create
+    delete:
+      tags:
+        - Calls
+      operationId: 'Remove call'
+      description: 'Removes a call'
+      parameters:
+        - $ref: '#/components/parameters/CallId'
+      responses:
+        204:
+          description: 'Call successfully removed'
+        400:
+          description: 'Call id is not provided'
+        404:
+          description: 'Call with id not found'
+    get:
+      tags:
+        - Calls
+      operationId: 'Get calls'
+      description: 'Gets calls'
+      parameters:
+        - $ref: '#/components/parameters/CallType'
+        - $ref: '#/components/parameters/PageNumber'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/SortField'
+        - $ref: '#/components/parameters/SortDirection'
+      responses:
+        200:
+          $ref: '#/components/responses/CallsPageResponse'
+        404:
+          description: 'No calls found'
+  /calls/bulk:
+    post:
+      tags:
+        - Calls
+      operationId: 'Add multiple calls'
+      description: 'Adds multiple calls'
+      requestBody:
+        $ref: '#/components/requestBodies/AddCalls'
+      responses:
+        201:
+          $ref: '#/components/responses/AddCallsResponse'
+        400:
+          description: 'Request is not valid'
+      x-handler:
+        address: calls.create
+  /stats:
+    get:
+      tags:
+        - Stats
+      operationId: 'Get stats'
+      description: 'Get call statistics'
+      responses:
+        200:
+          $ref: '#/components/responses/StatsResponse'
+        404:
+          description: 'No stats found'
+components:
+  schemas:
+    Id:
+      format: uuid
+      type: string
+    CallType:
+      type: string
+      enum:
+        - INBOUND
+        - OUTBOUND
+    Phone:
+      type: string
+      format: phone
+      pattern: '^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$'
+    Cost:
+      type: number
+      format: double
+    Duration:
+      description: 'Duration in seconds'
+      type: integer
+    CallProperties:
+      type: object
+      required:
+        - callerNumber
+        - calleeNumber
+        - start
+        - end
+        - type
+      x-dependency:
+        relation: greater
+        properties:
+          - end
+          - start
+        data-format: date-time
+      properties:
+        callerNumber:
+          $ref: '#/components/schemas/Phone'
+        calleeNumber:
+          $ref: '#/components/schemas/Phone'
+        start:
+          format: date-time
+          type: string
+        end:
+          format: date-time
+          type: string
+        type:
+          $ref: '#/components/schemas/CallType'
+    Call:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/CallProperties'
+        - type: object
+          properties:
+            cost:
+              $ref: '#/components/schemas/Cost'
+    Stat:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        date:
+          format: date
+          type: string
+        totalDurationByCallType:
+          type: object
+          properties:
+            INBOUND:
+              $ref: '#/components/schemas/Duration'
+            OUTBOUND:
+              $ref: '#/components/schemas/Duration'
+        totalNumberOfCalls:
+          type: integer
+        numberOfCallsByCaller:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              phone:
+                $ref: '#/components/schemas/Phone'
+              numberOfCalls:
+                type: integer
+        numberOfCallsByCallee:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              phone:
+                $ref: '#/components/schemas/Phone'
+              numberOfCalls:
+                type: integer
+        totalCost:
+          $ref: '#/components/schemas/Cost'
+  securitySchemes: {}
+  requestBodies:
+    AddCall:
+      description: 'Add call'
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CallProperties'
+    AddCalls:
+      description: 'Add multiple calls'
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/CallProperties'
+  responses:
+    AddCallResponse:
+      description: 'Call successfully added'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Call'
+    AddCallsResponse:
+      description: 'Calls successfully added'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Call'
+    CallsPageResponse:
+      description: 'Calls page'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pageNumber:
+                type: integer
+              pageSize:
+                type: integer
+              totalCount:
+                type: integer
+                format: int64
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Call'
+    StatsResponse:
+      description: 'Calls statistics'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Stat'
+  parameters:
+    CallId:
+      in: path
+      description: Call Id
+      name: id
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+    CallType:
+      in: query
+      description: Call type
+      name: type
+      required: false
+      schema:
+        $ref: '#/components/schemas/CallType'
+    PageNumber:
+      in: query
+      description: Page number
+      name: page_num
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    PageSize:
+      in: query
+      description: Page size
+      name: page_size
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 10
+    SortField:
+      in: query
+      description: Sort field
+      name: sort_by
+      required: false
+      schema:
+        type: string
+        enum:
+          - callerNumber
+          - calleeNumber
+          - start
+          - end
+          - type
+    SortDirection:
+      in: query
+      description: Sort direction
+      name: sort_dir
+      required: false
+      schema:
+        type: string
+        enum:
+          - ASC
+          - DESC
+        default: ASC
+tags:
+  - name: Calls
+    description: Call management
+  - name: Stats
+    description: Call statistics
+security: []
