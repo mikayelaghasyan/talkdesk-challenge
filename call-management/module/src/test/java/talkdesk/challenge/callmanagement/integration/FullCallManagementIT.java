@@ -8,9 +8,9 @@ import java.net.URL;
 public class FullCallManagementIT extends CallManagementIT {
   @Override
   protected String[] programArgs() {
-    URL mongoConfigUrl = getClass().getClassLoader()
+    URL externalConfigUrl = getClass().getClassLoader()
       .getResource("additional-config/external.json");
 
-    return new String[] { mongoConfigUrl.getPath() };
+    return new String[] { externalConfigUrl.getPath() };
   }
 }
