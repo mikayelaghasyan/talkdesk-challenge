@@ -1,0 +1,10 @@
+{
+  "dbGateway": {
+    "username": "stat",
+    "password": "stat",
+    "db_name": "stat-db"
+  },
+  "eventBus": {
+    "groupId": "call-statistics"
+  }
+}

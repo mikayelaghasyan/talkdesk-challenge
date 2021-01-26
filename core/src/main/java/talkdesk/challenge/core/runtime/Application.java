@@ -13,6 +13,8 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.jackson.DatabindCodec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import talkdesk.challenge.core.communication.CommunicationBus;
 import talkdesk.challenge.core.db.DbGateway;
 import talkdesk.challenge.core.domainevent.DomainEventBus;
@@ -26,6 +28,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Application implements ApplicationContext {
+  private static final Logger log = LoggerFactory.getLogger(Application.class);
+
   private final Vertx vertx;
 
   private JsonObject config;
@@ -53,6 +57,7 @@ public class Application implements ApplicationContext {
       .forEach(config -> options.addStore(config));
     return ConfigRetriever.create(vertx, options).getConfig()
       .onSuccess(config -> {
+        log.debug("Config loaded: {}", config);
         this.config = config;
         configureCodec();
         eventBus = createEventBus();

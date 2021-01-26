@@ -1,0 +1,10 @@
+{
+  "dbGateway": {
+    "class": "talkdesk.challenge.mongo.MongoDbGateway",
+    "host": "mongo"
+  },
+  "eventBus": {
+    "class": "talkdesk.challenge.kafka.KafkaEventBus",
+    "bootstrapServers": "kafka:9092"
+  }
+}

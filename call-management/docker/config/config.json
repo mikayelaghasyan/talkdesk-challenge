@@ -1,0 +1,10 @@
+{
+  "dbGateway": {
+    "username": "call",
+    "password": "call",
+    "db_name": "call-db"
+  },
+  "eventBus": {
+    "groupId": "call-management"
+  }
+}
