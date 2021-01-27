@@ -6,7 +6,7 @@ info:
     name: 'Mikayel Aghasyan'
     email: 'mikayel.aghasyan@gmail.com'
 servers:
-  - url: 'http://localhost:8080/api'
+  - url: 'http://localhost:9000/api'
     description: 'Local Server'
   - url: '{scheme}://{host}/api'
     description: 'Custom Server'
@@ -17,7 +17,7 @@ servers:
           - https
         default: http
       host:
-        default: 'localhost:8080'
+        default: 'localhost:9000'
 paths:
   /calls:
     post:
