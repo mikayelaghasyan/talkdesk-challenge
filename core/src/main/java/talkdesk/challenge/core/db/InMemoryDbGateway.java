@@ -89,7 +89,7 @@ public class InMemoryDbGateway implements DbGateway {
   @SuppressWarnings({"rawtypes", "unchecked"})
   private Collection<JsonObject> sorted(Collection<JsonObject> items, Order order) {
     Comparator<JsonObject> comparator = Comparator.comparing((JsonObject x) -> (Comparable)x.getValue(order.field()));
-    if (Order.Direction.DESCENDING.equals(order.direction())) {
+    if (Order.Direction.DESC.equals(order.direction())) {
       comparator = comparator.reversed();
     }
     return items.stream().sorted(comparator).collect(Collectors.toList());

@@ -27,6 +27,15 @@ public class Stat {
     this.totalDurationByCallType.put(CallType.INBOUND, new DurationByCallType(CallType.INBOUND, Duration.ZERO));
     this.totalDurationByCallType.put(CallType.OUTBOUND, new DurationByCallType(CallType.OUTBOUND, Duration.ZERO));
   }
+
+  public UUID uuid() {
+    return uuid;
+  }
+
+  public void uuid(UUID uuid) {
+    this.uuid = uuid;
+  }
+
   public LocalDate date() {
     return date;
   }
@@ -56,7 +65,7 @@ public class Stat {
   }
 
   public NumberOfCallsByPhone numberOfCallsByCaller(Phone phone) {
-    return numberOfCallsByCaller.computeIfAbsent(phone, k -> new NumberOfCallsByPhone(k));
+    return numberOfCallsByCaller.computeIfAbsent(phone, NumberOfCallsByPhone::new);
   }
 
   public Map<Phone, NumberOfCallsByPhone> numberOfCallsByCallee() {
@@ -64,7 +73,7 @@ public class Stat {
   }
 
   public NumberOfCallsByPhone numberOfCallsByCallee(Phone phone) {
-    return numberOfCallsByCallee.computeIfAbsent(phone, k -> new NumberOfCallsByPhone(k));
+    return numberOfCallsByCallee.computeIfAbsent(phone, NumberOfCallsByPhone::new);
   }
 
   public Cost totalCost() {
@@ -95,6 +104,10 @@ public class Stat {
       throw new IllegalStateException("Total cost can't be negative");
     }
     this.totalCost = this.totalCost.remove(cost);
+  }
+
+  public boolean isEmpty() {
+    return totalNumberOfCalls == 0;
   }
 
   @Override

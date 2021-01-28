@@ -35,7 +35,7 @@ public class VertxEventBus extends VertxBus implements DomainEventBus {
       Future.succeededFuture(message.body())
         .map(body -> Json.decodeValue(body, classFromHeader(message.headers()).orElse(JsonObject.class)))
         .onSuccess(event -> log.debug("received: ({}, {})", address, event))
-        .onSuccess(event -> handler.received(createEventContext(), (U)event))
+        .compose(event -> handler.received(createEventContext(), (U) event))
         .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage())));
   }
 

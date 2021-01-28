@@ -3,12 +3,14 @@ package talkdesk.challenge.core.vertx;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.jackson.DatabindCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import talkdesk.challenge.core.communication.*;
+import talkdesk.challenge.core.error.Error;
 import talkdesk.challenge.core.runtime.ApplicationContext;
 
 public class VertxCommunicationBus extends VertxBus implements CommunicationBus {
@@ -24,7 +26,7 @@ public class VertxCommunicationBus extends VertxBus implements CommunicationBus 
   public <U, V> Future<V> ask(String address, U query, Class<V> resultClass) {
     log.debug("sent: ({}, {})", address, query);
     return applicationContext.vertx().eventBus().<Buffer>request(address, Json.encodeToBuffer(query), optionsFor(query))
-      .map(reply -> reply.body())
+      .map(Message::body)
       .map(result -> Json.decodeValue(result, resultClass))
       .onSuccess(reply -> log.debug("received: ({}, {})", address, reply))
       .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage()));
@@ -33,7 +35,7 @@ public class VertxCommunicationBus extends VertxBus implements CommunicationBus 
   public <U, V> Future<V> ask(String address, U query, TypeReference<V> resultTypeRef) {
     log.debug("sent: ({}, {})", address, query);
     return applicationContext.vertx().eventBus().<Buffer>request(address, Json.encodeToBuffer(query), optionsFor(query))
-      .map(reply -> reply.body())
+      .map(Message::body)
       .map(result -> ((DatabindCodec)Json.CODEC).fromBuffer(result, resultTypeRef))
       .onSuccess(reply -> log.debug("received: ({}, {})", address, reply))
       .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage()));
@@ -59,7 +61,10 @@ public class VertxCommunicationBus extends VertxBus implements CommunicationBus 
         .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage()))
         .compose(query -> handler.handle(createQueryContext(), (U)query))
         .onSuccess(reply -> message.reply(Json.encodeToBuffer(reply), optionsFor(reply)))
-        .onFailure(error -> message.fail(0, error.getLocalizedMessage()))
+        .onFailure(error -> {
+          int code = (error instanceof Error) ? ((Error)error).code() : 0;
+          message.fail(code, error.getLocalizedMessage());
+        })
         .onSuccess(reply -> log.debug("sent: ({}, {})", address, reply))
         .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage())));
   }
@@ -75,7 +80,10 @@ public class VertxCommunicationBus extends VertxBus implements CommunicationBus 
         .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage()))
         .compose(command -> handler.handle(createCommandContext(), (U)command))
         .onSuccess(x -> message.reply(null))
-        .onFailure(error -> message.fail(0, error.getLocalizedMessage()))
+        .onFailure(error -> {
+          int code = (error instanceof Error) ? ((Error)error).code() : 0;
+          message.fail(code, error.getLocalizedMessage());
+        })
         .onSuccess(x -> log.debug("sent: ({}, {})", address, null))
         .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage())));
   }

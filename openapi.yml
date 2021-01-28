@@ -23,7 +23,7 @@ paths:
     post:
       tags:
         - Calls
-      operationId: 'Add call'
+      operationId: 'AddCall'
       description: 'Adds a single call'
       requestBody:
         $ref: '#/components/requestBodies/AddCall'
@@ -32,26 +32,10 @@ paths:
           $ref: '#/components/responses/AddCallResponse'
         400:
           description: 'Request is not valid'
-      x-handler:
-        address: calls.create
-    delete:
-      tags:
-        - Calls
-      operationId: 'Remove call'
-      description: 'Removes a call'
-      parameters:
-        - $ref: '#/components/parameters/CallId'
-      responses:
-        204:
-          description: 'Call successfully removed'
-        400:
-          description: 'Call id is not provided'
-        404:
-          description: 'Call with id not found'
     get:
       tags:
         - Calls
-      operationId: 'Get calls'
+      operationId: 'GetCalls'
       description: 'Gets calls'
       parameters:
         - $ref: '#/components/parameters/CallType'
@@ -62,13 +46,26 @@ paths:
       responses:
         200:
           $ref: '#/components/responses/CallsPageResponse'
+  /calls/{id}:
+    delete:
+      tags:
+        - Calls
+      operationId: 'RemoveCall'
+      description: 'Removes a call'
+      parameters:
+        - $ref: '#/components/parameters/CallId'
+      responses:
+        204:
+          description: 'Call successfully removed'
+        400:
+          description: 'Call id is not provided'
         404:
-          description: 'No calls found'
+          description: 'Call with id not found'
   /calls/bulk:
     post:
       tags:
         - Calls
-      operationId: 'Add multiple calls'
+      operationId: 'AddCalls'
       description: 'Adds multiple calls'
       requestBody:
         $ref: '#/components/requestBodies/AddCalls'
@@ -77,19 +74,15 @@ paths:
           $ref: '#/components/responses/AddCallsResponse'
         400:
           description: 'Request is not valid'
-      x-handler:
-        address: calls.create
   /stats:
     get:
       tags:
         - Stats
-      operationId: 'Get stats'
+      operationId: 'GetStats'
       description: 'Get call statistics'
       responses:
         200:
           $ref: '#/components/responses/StatsResponse'
-        404:
-          description: 'No stats found'
 components:
   schemas:
     Id:
@@ -102,7 +95,7 @@ components:
         - OUTBOUND
     Phone:
       type: string
-      pattern: '^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$'
+      pattern: '^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$'
     Cost:
       type: number
       format: double
@@ -117,12 +110,16 @@ components:
         - start
         - end
         - type
-      x-dependency:
-        relation: greater
-        properties:
-          - end
-          - start
-        data-format: date-time
+      x-dependencies:
+        - relation: greater
+          properties:
+            - end
+            - start
+          data-format: date-time
+        - relation: not-equal
+          properties:
+            - callerNumber
+            - calleeNumber
       properties:
         callerNumber:
           $ref: '#/components/schemas/Phone'
@@ -150,8 +147,6 @@ components:
     Stat:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/Id'
         date:
           format: date
           type: string
@@ -257,7 +252,10 @@ components:
       name: type
       required: false
       schema:
-        $ref: '#/components/schemas/CallType'
+        type: string
+        enum:
+          - INBOUND
+          - OUTBOUND
     PageNumber:
       in: query
       description: Page number

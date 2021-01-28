@@ -14,23 +14,26 @@ import talkdesk.challenge.core.error.NotFound;
 
 public class CallEventHandler extends EventSubscriber<CallEvent> {
   @Override
-  public void received(EventContext context, CallEvent event) {
+  public Future<Void> received(EventContext context, CallEvent event) {
     if (event instanceof CallCreated) {
-      handleCallCreated(context, (CallCreated)event);
+      return handleCallCreated(context, (CallCreated)event);
     } else if (event instanceof CallDeleted) {
-      handleCallDeleted(context, (CallDeleted)event);
+      return handleCallDeleted(context, (CallDeleted)event);
+    } else {
+      return Future.succeededFuture();
     }
   }
 
-  private void handleCallCreated(EventContext context, CallCreated event) {
+  private Future<Void> handleCallCreated(EventContext context, CallCreated event) {
     ReadWriteRepository<CallSnapshot> callSnapshotRepository = context.repositoryOf("call-snapshot", CallSnapshot.class);
     ReadWriteRepository<Stat> statRepository = context.repositoryOf("stat", Stat.class);
-    callSnapshotRepository.save(createCallSnapshot(event))
+    return callSnapshotRepository.save(createCallSnapshot(event))
       .compose(callSnapshot -> Future.succeededFuture(callSnapshot.startedAt().toLocalDate())
         .compose(date -> statRepository.findFirst(Condition.eq("date", date.toString()))
           .map(item -> item.orElseGet(() -> new Stat(date)))
           .map(stat -> addCallToStat(stat, callSnapshot)))
-        .compose(stat -> statRepository.save(stat)));
+        .compose(statRepository::save))
+      .map(x -> null);
   }
 
   private CallSnapshot createCallSnapshot(CallCreated event) {
@@ -54,16 +57,17 @@ public class CallEventHandler extends EventSubscriber<CallEvent> {
     return stat;
   }
 
-  private void handleCallDeleted(EventContext context, CallDeleted event) {
+  private Future<Void> handleCallDeleted(EventContext context, CallDeleted event) {
     ReadWriteRepository<CallSnapshot> callSnapshotRepository = context.repositoryOf("call-snapshot", CallSnapshot.class);
     ReadWriteRepository<Stat> statRepository = context.repositoryOf("stat", Stat.class);
-    callSnapshotRepository.findOne(event.uuid())
+    return callSnapshotRepository.findOne(event.uuid())
       .map(callSnapshot -> callSnapshotRepository.delete(callSnapshot.uuid())
         .map(x -> callSnapshot.startedAt().toLocalDate())
         .compose(date -> statRepository.findFirst(Condition.eq("date", date.toString()))
           .map(item -> item.orElseThrow(() -> new NotFound("Stat not found")))
           .map(stat -> removeCallFromStat(stat, callSnapshot)))
-        .compose(stat -> statRepository.save(stat)));
+        .compose(stat -> stat.isEmpty() ? statRepository.delete(stat.uuid()) : statRepository.save(stat).map(x -> null)))
+      .map(x -> null);
   }
 
   private Stat removeCallFromStat(Stat stat, CallSnapshot callSnapshot) {

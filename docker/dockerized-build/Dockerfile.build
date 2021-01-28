@@ -1,0 +1,6 @@
+FROM openjdk:11 AS talkdesk-challenge-builder
+
+COPY . /usr/local/project/
+WORKDIR /usr/local/project/
+
+RUN ./mvnw clean install

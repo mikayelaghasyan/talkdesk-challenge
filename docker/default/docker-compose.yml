@@ -26,6 +26,8 @@ services:
       - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=1
       - KAFKA_CFG_NUM_PARTITIONS=16
       - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - ../../data/kafka:/opt/bitnami/kafka/logs
     depends_on:
       - zookeeper
 
@@ -38,9 +40,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
     volumes:
-      - ../call-management/docker/mongo-init.js:/docker-entrypoint-initdb.d/call-db-init.js:ro
-      - ../call-statistics/docker/mongo-init.js:/docker-entrypoint-initdb.d/stat-db-init.js:ro
-      - ../data/mongo:/data/db
+      - ../../call-management/docker/mongo-init.js:/docker-entrypoint-initdb.d/call-db-init.js:ro
+      - ../../call-statistics/docker/mongo-init.js:/docker-entrypoint-initdb.d/stat-db-init.js:ro
+      - ../../data/mongo:/data/db
 
   mongo-express:
     image: 'mongo-express:latest'
@@ -61,25 +63,7 @@ services:
 #      BASE_URL: '/swagger'
       SWAGGER_JSON: '/openapi.yml'
     volumes:
-      - ../openapi.yml:/openapi.yml:ro
-
-  call-management:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-      args:
-        module: call-management
-    networks:
-      - challenge
-
-  call-statistics:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-      args:
-        module: call-statistics
-    networks:
-      - challenge
+      - ../../openapi.yml:/openapi.yml:ro
 
   nginx:
     image: nginx:latest
@@ -89,6 +73,42 @@ services:
     ports:
       - '9000:80'
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - swagger
+      - ../extra/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  call-management:
+    build:
+      context: ../..
+      dockerfile: ./docker/default/Dockerfile
+      args:
+        module: call-management
+        modulePath: call-management/module
+        suffix: '-module'
+    networks:
+      - challenge
+
+  call-statistics:
+    build:
+      context: ../..
+      dockerfile: ./docker/default/Dockerfile
+      args:
+        module: call-statistics
+        modulePath: call-statistics/module
+        suffix: '-module'
+    networks:
+      - challenge
+
+  gateway:
+    build:
+      context: ../..
+      dockerfile: ./docker/default/Dockerfile
+      args:
+        module: api-gateway
+        modulePath: api-gateway
+        suffix: ''
+    environment:
+      specPath: '/openapi.yml'
+      baseUrl: '/api'
+    volumes:
+      - ../../openapi.yml:/openapi.yml:ro
+    networks:
+      - challenge

@@ -56,7 +56,7 @@ public class KafkaEventBus implements DomainEventBus {
     consumer.handler(record -> Future.succeededFuture(record.value())
       .map(body -> Json.decodeValue(body, classFromHeader(record.headers()).orElse(JsonObject.class)))
       .onSuccess(event -> log.debug("received: ({}, {})", address, event))
-      .onSuccess(event -> handler.received(createEventContext(), (U)event))
+      .compose(event -> handler.received(createEventContext(), (U) event))
       .compose(event -> consumer.commit())
       .onFailure(error -> log.debug("failed: ({}, {})", address, error.getLocalizedMessage())));
     consumer.subscribe(address);

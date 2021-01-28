@@ -1,5 +1,6 @@
 package talkdesk.challenge.callmanagement.integration;
 
+import io.vertx.core.Future;
 import talkdesk.challenge.callmanagement.api.event.CallEvent;
 import talkdesk.challenge.core.domainevent.EventContext;
 import talkdesk.challenge.core.domainevent.EventSubscriber;
@@ -15,7 +16,8 @@ public class CallEventLogger extends EventSubscriber<CallEvent> {
   }
 
   @Override
-  public void received(EventContext context, CallEvent event) {
+  public Future<Void> received(EventContext context, CallEvent event) {
     events.add(event);
+    return Future.succeededFuture();
   }
 }

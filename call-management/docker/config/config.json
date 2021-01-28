@@ -6,5 +6,23 @@
   },
   "eventBus": {
     "groupId": "call-management"
+  },
+  "tariff": {
+    "inboundRules": [
+      {
+        "upTo": null,
+        "cost": 0
+      }
+    ],
+    "outboundRules": [
+      {
+        "upTo": 5,
+        "cost": 10
+      },
+      {
+        "upTo": null,
+        "cost": 5
+      }
+    ]
   }
 }

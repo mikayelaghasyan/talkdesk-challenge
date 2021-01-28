@@ -20,11 +20,11 @@ public class Cost implements Comparable<Cost> {
   }
 
   public void longValue(long longValue) {
-    this.longValue = longValue;
+    this.longValue = validated(longValue);
   }
 
   private Cost(long cost) {
-    this.longValue = cost;
+    this.longValue = validated(cost);
   }
 
   public static Cost of(long cost) {
@@ -44,14 +44,18 @@ public class Cost implements Comparable<Cost> {
   }
 
   public Cost remove(Cost other) {
-    if (this.longValue < other.longValue()) {
-      throw new IllegalStateException("Cost can't be negative");
-    }
     return Cost.of(this.longValue - other.longValue());
   }
 
   public Cost multiply(Long multiplier) {
     return Cost.of(this.longValue * multiplier);
+  }
+
+  private long validated(long value) {
+    if (value < 0) {
+      throw new IllegalStateException("Cost can't be negative");
+    }
+    return value;
   }
 
   @Override

@@ -18,6 +18,7 @@
     <module>core</module>
     <module>call-management</module>
     <module>call-statistics</module>
+    <module>api-gateway</module>
     <module>mongo-gateway</module>
     <module>kafka-event-bus</module>
   </modules>

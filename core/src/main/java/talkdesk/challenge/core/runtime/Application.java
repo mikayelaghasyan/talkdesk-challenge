@@ -49,12 +49,15 @@ public class Application implements ApplicationContext {
   public Future<Void> run(String[] args) {
     ConfigRetrieverOptions options = new ConfigRetrieverOptions();
     Optional.ofNullable(defaultConfigStore())
-      .map(store -> options.addStore(store));
+      .map(options::addStore);
     Arrays.stream(args).map(arg -> new ConfigStoreOptions()
       .setType("file")
       .setOptional(true)
       .setConfig(new JsonObject().put("path", arg)))
-      .forEach(config -> options.addStore(config));
+      .forEach(options::addStore);
+    options.addStore(new ConfigStoreOptions()
+      .setType("env")
+      .setConfig(new JsonObject().put("raw-data", true)));
     return ConfigRetriever.create(vertx, options).getConfig()
       .onSuccess(config -> {
         log.debug("Config loaded: {}", config);
@@ -70,7 +73,7 @@ public class Application implements ApplicationContext {
     URL configUrl = getClass().getClassLoader()
       .getResource("conf/config.json");
     return Optional.ofNullable(configUrl)
-      .map(url -> url.getPath())
+      .map(URL::getPath)
       .map(path -> new ConfigStoreOptions()
         .setType("file")
         .setOptional(true)
@@ -118,22 +121,22 @@ public class Application implements ApplicationContext {
   private DomainEventBus createEventBus() {
     DomainEventBusFactory eventBusFactory = new DomainEventBusFactory(this);
     return Optional.ofNullable(config.getJsonObject("eventBus"))
-      .map(eventBusConfig -> eventBusFactory.createEventBus(eventBusConfig))
-      .orElseGet(() -> eventBusFactory.createDefaultEventBus());
+      .flatMap(eventBusFactory::createEventBus)
+      .orElseGet(eventBusFactory::createDefaultEventBus);
   }
 
   private CommunicationBus createCommunicationBus() {
     CommunicationBusFactory communicationBusFactory = new CommunicationBusFactory(this);
     return Optional.ofNullable(config.getJsonObject("communicationBus"))
-      .map(communicationBusConfig -> communicationBusFactory.createCommunicationBus(communicationBusConfig))
-      .orElseGet(() -> communicationBusFactory.createDefaultCommunicationBus());
+      .flatMap(communicationBusFactory::createCommunicationBus)
+      .orElseGet(communicationBusFactory::createDefaultCommunicationBus);
   }
 
   private DbGateway createDbGateway() {
     DbGatewayFactory dbGatewayFactory = new DbGatewayFactory(this);
     return Optional.ofNullable(config.getJsonObject("dbGateway"))
-      .map(dbGatewayConfig -> dbGatewayFactory.createDbGateway(dbGatewayConfig))
-      .orElseGet(() -> dbGatewayFactory.createDefaultDbGateway());
+      .flatMap(dbGatewayFactory::createDbGateway)
+      .orElseGet(dbGatewayFactory::createDefaultDbGateway);
   }
 
   public <U extends Node> void deployNode(U node) {

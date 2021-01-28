@@ -63,14 +63,14 @@ public class MongoDbGateway implements DbGateway {
     FindOptions options = new FindOptions();
     if (order != null) {
       options.setSort(new JsonObject()
-        .put(order.field(), Order.Direction.DESCENDING.equals(order.direction()) ? -1 : 1));
+        .put(order.field(), Order.Direction.DESC.equals(order.direction()) ? -1 : 1));
     }
     if (page != null) {
       options.setSkip((int) (page.number() * page.size()));
       options.setLimit((int) page.size());
     }
     return client.findWithOptions(name, query, options)
-      .map(x -> new JsonArray(x));
+      .map(JsonArray::new);
   }
 
   @Override

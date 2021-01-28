@@ -4,6 +4,8 @@ import io.vertx.core.json.JsonObject;
 import talkdesk.challenge.core.communication.CommunicationBus;
 import talkdesk.challenge.core.vertx.VertxCommunicationBus;
 
+import java.util.Optional;
+
 public class CommunicationBusFactory {
   private final ApplicationContext applicationContext;
 
@@ -11,8 +13,8 @@ public class CommunicationBusFactory {
     this.applicationContext = applicationContext;
   }
 
-  public CommunicationBus createCommunicationBus(JsonObject config) {
-    throw new UnsupportedOperationException();
+  public Optional<CommunicationBus> createCommunicationBus(JsonObject config) {
+    return Optional.empty();
   }
 
   public CommunicationBus createDefaultCommunicationBus() {

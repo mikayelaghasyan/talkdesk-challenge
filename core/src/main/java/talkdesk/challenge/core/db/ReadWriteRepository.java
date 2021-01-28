@@ -18,10 +18,6 @@ public class ReadWriteRepository<U> extends ReadOnlyRepository<U> {
 
   public Future<Void> delete(UUID uuid) {
     return dbGateway.delete(name, uuid)
-      .onSuccess(deleted -> {
-        if (!deleted) {
-          throw new NotFound(uuid);
-        }
-      }).map(x -> null);
+      .compose(deleted -> !deleted ? Future.failedFuture(new NotFound(uuid)) : Future.succeededFuture());
   }
 }

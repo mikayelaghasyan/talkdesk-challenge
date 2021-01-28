@@ -14,6 +14,6 @@ public class GetStatsHandler extends QueryHandler<GetStats, List<Stat>> {
   @Override
   public Future<List<Stat>> handle(QueryContext context, GetStats input) {
     ReadOnlyRepository<Stat> repository = context.repositoryOf("stat", Stat.class);
-    return repository.findAll(null, new Order("date", Order.Direction.ASCENDING));
+    return repository.findAll(null, new Order("date", Order.Direction.ASC));
   }
 }

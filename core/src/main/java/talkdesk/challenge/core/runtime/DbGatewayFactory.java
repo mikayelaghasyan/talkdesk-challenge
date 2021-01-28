@@ -4,6 +4,8 @@ import io.vertx.core.json.JsonObject;
 import talkdesk.challenge.core.db.DbGateway;
 import talkdesk.challenge.core.db.InMemoryDbGateway;
 
+import java.util.Optional;
+
 public class DbGatewayFactory {
   private final ApplicationContext applicationContext;
 
@@ -12,17 +14,17 @@ public class DbGatewayFactory {
   }
 
   @SuppressWarnings("unchecked")
-  public DbGateway createDbGateway(JsonObject config) {
+  public Optional<DbGateway> createDbGateway(JsonObject config) {
     try {
       if (config.containsKey("class")) {
         String className = config.getString("class");
         Class<DbGateway> cls = (Class<DbGateway>) Class.forName(className);
-        return cls.getConstructor(ApplicationContext.class, JsonObject.class).newInstance(applicationContext, config);
+        return Optional.of(cls.getConstructor(ApplicationContext.class, JsonObject.class).newInstance(applicationContext, config));
       } else {
-        throw new RuntimeException("DB gateway class not specified");
+        return Optional.empty();
       }
     } catch (Exception e) {
-      throw new RuntimeException(String.format("Can't load DB gateway: %s", e.getLocalizedMessage()));
+      return Optional.empty();
     }
   }
 
