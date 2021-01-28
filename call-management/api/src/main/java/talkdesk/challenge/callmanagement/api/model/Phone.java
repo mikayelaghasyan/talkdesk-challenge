@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 @JsonSerialize(using = PhoneSerializer.class)
 @JsonDeserialize(using = PhoneDeserializer.class)
 public class Phone {
-  private static Pattern pattern = Pattern.compile("^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\s./0-9]*$");
+  private static final Pattern pattern = Pattern.compile("^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\s./0-9]*$");
 
   private String number;
 

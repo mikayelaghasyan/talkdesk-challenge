@@ -11,6 +11,7 @@ public class FullCallManagementIT extends CallManagementIT {
     URL externalConfigUrl = getClass().getClassLoader()
       .getResource("additional-config/external.json");
 
+    assert externalConfigUrl != null;
     return new String[] { externalConfigUrl.getPath() };
   }
 }

@@ -11,7 +11,7 @@ public class EventContext {
   private final CommunicationBus communicationBus;
   private final DomainEventBus eventBus;
   private final DbGateway dbGateway;
-  private Map<String, ReadWriteRepository<?>> repositories;
+  private final Map<String, ReadWriteRepository<?>> repositories;
 
   public EventContext(CommunicationBus communicationBus, DomainEventBus eventBus, DbGateway dbGateway) {
     this.communicationBus = communicationBus;

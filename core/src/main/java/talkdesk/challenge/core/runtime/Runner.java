@@ -26,7 +26,7 @@ public class Runner {
       Node node = cls.getConstructor().newInstance();
 
       Vertx.clusteredVertx(new VertxOptions())
-        .map(vertx -> new Application(vertx))
+        .map(Application::new)
         .compose(app -> app.run(args)
           .onSuccess(x -> app.deployNode(node)));
     }

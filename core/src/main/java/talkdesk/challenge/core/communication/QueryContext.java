@@ -9,7 +9,7 @@ import java.util.Map;
 public class QueryContext {
   private final CommunicationBus communicationBus;
   private final DbGateway dbGateway;
-  private Map<String, ReadOnlyRepository<?>> repositories;
+  private final Map<String, ReadOnlyRepository<?>> repositories;
 
   public QueryContext(CommunicationBus communicationBus, DbGateway dbGateway) {
     this.communicationBus = communicationBus;

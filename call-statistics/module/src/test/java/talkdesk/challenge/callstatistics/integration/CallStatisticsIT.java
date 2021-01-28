@@ -43,7 +43,7 @@ public class CallStatisticsIT {
     app.run(programArgs())
       .onSuccess(x -> app.deployNode(new CallStatistics()))
       .onSuccess(x -> context.completeNow())
-      .onFailure(e -> context.failNow(e));
+      .onFailure(context::failNow);
   }
 
   protected String[] programArgs() {
@@ -55,7 +55,7 @@ public class CallStatisticsIT {
     app.dbGateway().deleteAll("stat")
       .compose(x -> app.dbGateway().deleteAll("call-snapshot"))
       .onSuccess(x -> context.completeNow())
-      .onFailure(e -> context.failNow(e));
+      .onFailure(context::failNow);
   }
 
   @Test
@@ -98,7 +98,7 @@ public class CallStatisticsIT {
         assertThat(stats.get(1), equalTo(expectedDay2Stats));
       }))
       .onSuccess(x -> context.completeNow())
-      .onFailure(e -> context.failNow(e));
+      .onFailure(context::failNow);
   }
 
   private Stat createExpectedDayStats(LocalDate date, Duration inboundDuration, Duration outboundDuration,

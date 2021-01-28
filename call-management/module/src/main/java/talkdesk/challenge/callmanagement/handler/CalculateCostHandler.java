@@ -9,7 +9,7 @@ import talkdesk.challenge.core.communication.QueryContext;
 import talkdesk.challenge.core.communication.QueryHandler;
 
 public class CalculateCostHandler extends QueryHandler<CalculateCost, Cost> {
-  private Tariff tariff;
+  private final Tariff tariff;
 
   public CalculateCostHandler(JsonObject tariff) {
     this.tariff = tariff.mapTo(Tariff.class);

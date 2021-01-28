@@ -44,7 +44,7 @@ public class CallManagementIT {
         app.eventBus().subscribe("call", eventLogger);
       }).onSuccess(x -> app.deployNode(new CallManagement()))
       .onSuccess(x -> context.completeNow())
-      .onFailure(e -> context.failNow(e));
+      .onFailure(context::failNow);
   }
 
   protected String[] programArgs() {
@@ -60,27 +60,21 @@ public class CallManagementIT {
     var expectedCallDeletedEvent = createExpectedCallDeletedEvent(expectedCall.uuid());
     app.communicationBus().order("call-management.create-call", createCallCommand)
       .compose(x -> asyncSleep(500))
-      .onSuccess(x -> context.verify(() -> {
-        assertThat(eventLogger.events(), hasItem(equalTo(expectedCallCreatedEvent)));
-      }))
+      .onSuccess(x -> context.verify(() -> assertThat(eventLogger.events(), hasItem(equalTo(expectedCallCreatedEvent)))))
       .compose(x -> app.communicationBus().ask("call-management.get-calls", getCallsQuery(), new TypeReference<Paginated<Call>>() {}))
-      .map(x -> x.items())
+      .map(Paginated::items)
       .onSuccess(calls -> context.verify(() -> {
         assertThat(calls.size(), is(1));
         assertThat(calls, hasItem(expectedCall));
       }))
       .compose(calls -> app.communicationBus().order("call-management.delete-call", deleteCallCommand(calls.stream().findFirst().get().uuid())))
       .compose(x -> asyncSleep(500))
-      .onSuccess(x -> context.verify(() -> {
-        assertThat(eventLogger.events(), hasItem(equalTo(expectedCallDeletedEvent)));
-      }))
+      .onSuccess(x -> context.verify(() -> assertThat(eventLogger.events(), hasItem(equalTo(expectedCallDeletedEvent)))))
       .compose(x -> app.communicationBus().ask("call-management.get-calls", getCallsQuery(), new TypeReference<Paginated<Call>>() {}))
-      .map(x -> x.items())
-      .onSuccess(calls -> context.verify(() -> {
-        assertThat(calls, empty());
-      }))
+      .map(Paginated::items)
+      .onSuccess(calls -> context.verify(() -> assertThat(calls, empty())))
       .onSuccess(x -> context.completeNow())
-      .onFailure(e -> context.failNow(e));
+      .onFailure(context::failNow);
   }
 
   private CreateCall createCallCommand() {

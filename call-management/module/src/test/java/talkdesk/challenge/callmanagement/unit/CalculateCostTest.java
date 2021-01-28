@@ -47,7 +47,7 @@ public class CalculateCostTest extends BaseCallTest {
       Arguments.of(now, now, CallType.OUTBOUND, Cost.ofZero()),
       Arguments.of(now.minusMinutes(4), now, CallType.OUTBOUND, Cost.of(4 * 10)),
       Arguments.of(now.minusMinutes(5), now, CallType.OUTBOUND, Cost.of(5 * 10)),
-      Arguments.of(now.minusMinutes(6), now, CallType.OUTBOUND, Cost.of(5 * 10 + 1 * 5)),
+      Arguments.of(now.minusMinutes(6), now, CallType.OUTBOUND, Cost.of(5 * 10 + 5)),
       Arguments.of(now.minusMinutes(10), now, CallType.OUTBOUND, Cost.of(5 * 10 + 5 * 5))
     );
   }
@@ -58,11 +58,9 @@ public class CalculateCostTest extends BaseCallTest {
     var query = createQuery(start, end, type);
 
     handler.handle(queryContext, query)
-      .onSuccess(cost -> context.verify(() -> {
-        assertThat(cost, equalTo(expectedCost));
-      }))
+      .onSuccess(cost -> context.verify(() -> assertThat(cost, equalTo(expectedCost))))
       .onSuccess(x -> context.completeNow())
-      .onFailure(e -> context.failNow(e));
+      .onFailure(context::failNow);
   }
 
   private CalculateCost createQuery(LocalDateTime start, LocalDateTime end, CallType type) {

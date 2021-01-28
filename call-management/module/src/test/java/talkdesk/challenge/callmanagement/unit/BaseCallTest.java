@@ -18,7 +18,6 @@ import talkdesk.challenge.core.domainevent.DomainEventBus;
 
 import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public abstract class BaseCallTest {

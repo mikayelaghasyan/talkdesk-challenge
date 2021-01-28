@@ -22,8 +22,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(VertxExtension.class)
@@ -55,7 +53,7 @@ public class CreateCallTest extends BaseCallTest {
       .onSuccess(x -> verify(readWriteCallRepository, times(1)).save(expectedObject))
       .onSuccess(x -> verify(eventBus, times(1)).publish(eq("call"), eq(expectedEvent)))
       .onSuccess(x -> context.completeNow())
-      .onFailure(e -> context.failNow(e));
+      .onFailure(context::failNow);
   }
 
   private CreateCall createCommand(CallType type) {
