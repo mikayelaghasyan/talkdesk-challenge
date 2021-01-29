@@ -144,6 +144,13 @@ components:
           properties:
             cost:
               $ref: '#/components/schemas/Cost'
+    NumberOfCallsByPhone:
+      type: object
+      properties:
+        phone:
+          $ref: '#/components/schemas/Phone'
+        numberOfCalls:
+          type: integer
     Stat:
       type: object
       properties:
@@ -160,23 +167,13 @@ components:
         totalNumberOfCalls:
           type: integer
         numberOfCallsByCaller:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              phone:
-                $ref: '#/components/schemas/Phone'
-              numberOfCalls:
-                type: integer
+          type: array
+          items:
+            $ref: '#/components/schemas/NumberOfCallsByPhone'
         numberOfCallsByCallee:
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              phone:
-                $ref: '#/components/schemas/Phone'
-              numberOfCalls:
-                type: integer
+          type: array
+          items:
+            $ref: '#/components/schemas/NumberOfCallsByPhone'
         totalCost:
           $ref: '#/components/schemas/Cost'
   securitySchemes: {}
@@ -188,6 +185,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/CallProperties'
+          example:
+            callerNumber: "+37455000000"
+            calleeNumber: "+37455111111"
+            start: "2021-01-25T12:00:00Z"
+            end: "2021-01-25T12:15:00Z"
+            type: "OUTBOUND"
     AddCalls:
       description: 'Add multiple calls'
       required: true
@@ -197,6 +200,17 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/CallProperties'
+          example:
+            - callerNumber: "+37455000000"
+              calleeNumber: "+37455111111"
+              start: "2021-01-25T12:00:00Z"
+              end: "2021-01-25T12:15:00Z"
+              type: "OUTBOUND"
+            - callerNumber: "+37455222222"
+              calleeNumber: "+37455000000"
+              start: "2021-01-26T15:00:00Z"
+              end: "2021-01-26T15:05:00Z"
+              type: "INBOUND"
   responses:
     AddCallResponse:
       description: 'Call successfully added'
@@ -204,6 +218,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Call'
+          example:
+            id: "00000000-0000-0000-0000-000000000000"
+            callerNumber: "+37455000000"
+            calleeNumber: "+37455111111"
+            start: "2021-01-25T12:00:00Z"
+            end: "2021-01-25T12:15:00Z"
+            type: "OUTBOUND"
+            cost: 1.0
     AddCallsResponse:
       description: 'Calls successfully added'
       content:
@@ -212,6 +234,21 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Call'
+          example:
+            - id: "00000000-0000-0000-0000-000000000000"
+              callerNumber: "+37455000000"
+              calleeNumber: "+37455111111"
+              start: "2021-01-25T12:00:00Z"
+              end: "2021-01-25T12:15:00Z"
+              type: "OUTBOUND"
+              cost: 1.0
+            - id: "00000000-0000-0000-0000-000000000000"
+              callerNumber: "+37455222222"
+              calleeNumber: "+37455000000"
+              start: "2021-01-26T15:00:00Z"
+              end: "2021-01-26T15:05:00Z"
+              type: "INBOUND"
+              cost: 0.0
     CallsPageResponse:
       description: 'Calls page'
       content:
@@ -230,6 +267,25 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/Call'
+          example:
+            pageNumber: 0
+            pageSize: 10
+            totalCount: 2
+            items:
+              - id: "00000000-0000-0000-0000-000000000000"
+                callerNumber: "+37455000000"
+                calleeNumber: "+37455111111"
+                start: "2021-01-25T12:00:00Z"
+                end: "2021-01-25T12:15:00Z"
+                type: "OUTBOUND"
+                cost: 1.0
+              - id: "00000000-0000-0000-0000-000000000000"
+                callerNumber: "+37455222222"
+                calleeNumber: "+37455000000"
+                start: "2021-01-26T15:00:00Z"
+                end: "2021-01-26T15:05:00Z"
+                type: "INBOUND"
+                cost: 0.0
     StatsResponse:
       description: 'Calls statistics'
       content:
@@ -238,6 +294,31 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Stat'
+          example:
+            - date: "2021-01-25"
+              totalDurationByCallType:
+                INBOUND: 0
+                OUTBOUND: 900
+              totalNumberOfCalls: 1
+              numberOfCallsByCaller:
+                - phone: "+37455000000"
+                  numberOfCalls: 1
+              numberOfCallsByCallee:
+                - phone: "+37455111111"
+                  numberOfCalls: 1
+              totalCost: 1.0
+            - date: "2021-01-26"
+              totalDurationByCallType:
+                INBOUND: 300
+                OUTBOUND: 0
+              totalNumberOfCalls: 1
+              numberOfCallsByCaller:
+                - phone: "+37455222222"
+                  numberOfCalls: 1
+              numberOfCallsByCallee:
+                - phone: "+37455000000"
+                  numberOfCalls: 1
+              totalCost: 0.0
   parameters:
     CallId:
       in: path

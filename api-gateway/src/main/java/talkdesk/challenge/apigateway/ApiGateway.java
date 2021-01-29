@@ -165,11 +165,15 @@ public class ApiGateway extends Node {
         .put(CallType.OUTBOUND.toString(), stat.totalDurationByCallType(CallType.OUTBOUND).duration().getSeconds()))
       .put("totalNumberOfCalls", stat.totalNumberOfCalls())
       .put("numberOfCallsByCaller", stat.numberOfCallsByCaller().keySet().stream()
-        .reduce(new JsonObject(), (obj, key) ->
-          obj.put(key.toString(), stat.numberOfCallsByCaller(key).numberOfCalls()), (a, b) -> b))
+        .reduce(new JsonArray(), (arr, key) ->
+          arr.add(new JsonObject()
+            .put("phone", key.toString())
+            .put("numberOfCalls", stat.numberOfCallsByCaller(key).numberOfCalls())), (a, b) -> b))
       .put("numberOfCallsByCallee", stat.numberOfCallsByCallee().keySet().stream()
-        .reduce(new JsonObject(), (obj, key) ->
-          obj.put(key.toString(), stat.numberOfCallsByCallee(key).numberOfCalls()), (a, b) -> b))
+        .reduce(new JsonArray(), (arr, key) ->
+          arr.add(new JsonObject()
+            .put("phone", key.toString())
+            .put("numberOfCalls", stat.numberOfCallsByCallee(key).numberOfCalls())), (a, b) -> b))
       .put("totalCost", Double.parseDouble(stat.totalCost().toString()));
   }
 
